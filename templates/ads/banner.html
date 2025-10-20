@@ -1,0 +1,112 @@
+{% load static %}
+
+{% if banner %}
+<div class="ad-banner" data-banner-id="{{ banner.id }}" data-placement="{{ placement.slug }}">
+    {% if banner.banner_type == 'image' and banner.image %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow">
+            <img src="{{ banner.image.url }}" 
+                 alt="{{ banner.alt_text|default:banner.name }}"
+                 width="{{ placement.width }}"
+                 height="{{ placement.height }}"
+                 class="ad-image">
+        </a>
+    {% elif banner.banner_type == 'video' and banner.video %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow">
+            <video width="{{ placement.width }}" 
+                   height="{{ placement.height }}" 
+                   autoplay muted loop
+                   class="ad-video">
+                <source src="{{ banner.video.url }}" type="video/mp4">
+            </video>
+        </a>
+    {% elif banner.banner_type == 'html' and banner.html_content %}
+        <div class="ad-html">
+            {{ banner.html_content|safe }}
+        </div>
+    {% elif banner.banner_type == 'text' and banner.text_content %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow" class="ad-text-link">
+            <div class="ad-text" style="width: {{ placement.width }}px; height: {{ placement.height }}px;">
+                {{ banner.text_content }}
+            </div>
+        </a>
+    {% endif %}
+    
+    <div class="ad-label">Реклама</div>
+</div>
+
+<style>
+.ad-banner {
+    position: relative;
+    display: inline-block;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.ad-banner:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.ad-image, .ad-video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.ad-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    color: #333;
+}
+
+.ad-text-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.ad-text-link:hover .ad-text {
+    background: #e9ecef;
+}
+
+.ad-html {
+    width: 100%;
+}
+
+.ad-label {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-family: Arial, sans-serif;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .ad-banner {
+        max-width: 100%;
+    }
+    
+    .ad-image, .ad-video {
+        width: 100%;
+        height: auto;
+    }
+}
+</style>
+{% endif %}
+
+
+

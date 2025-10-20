@@ -1,0 +1,90 @@
+{% if page_obj.has_other_pages %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline">
+            <i class="fas fa-chevron-left"></i>
+            Предыдущая
+        </a>
+    {% endif %}
+    
+    <div class="page-numbers">
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-number current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" class="page-number">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline">
+            Следующая
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    {% endif %}
+</div>
+
+<style>
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+}
+
+.page-number:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.page-number.current {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-numbers {
+        order: -1;
+    }
+}
+</style>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+

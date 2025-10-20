@@ -1,0 +1,42 @@
+# Production requirements for Rextube Django Application
+
+# Django
+Django==5.2.7
+django-extensions==3.2.3
+
+# Database
+# SQLite3 is included with Python
+
+# Web server
+gunicorn==21.2.0
+
+# Task queue
+celery==5.3.4
+redis==5.0.1
+
+# Security
+django-cors-headers==4.3.1
+
+# Media processing
+Pillow==10.1.0
+
+# Text processing
+transliterate==1.10.2
+
+# System monitoring
+psutil==5.9.6
+
+# Logging
+# django-logging==0.1.0  # Not available
+
+# Performance
+django-cacheops==7.1.0
+
+# Static files
+whitenoise==6.6.0
+
+# Environment variables
+python-decouple==3.8
+
+# Health checks
+django-health-check==3.17.0

@@ -1,0 +1,163 @@
+{% load core_tags %}
+<div class="replies-list">
+    {% for reply in replies %}
+        <div class="reply-item">
+            <div class="reply-header">
+                <div class="reply-author">
+                    <div class="reply-avatar">
+                        {% get_avatar_initial reply.user %}
+                    </div>
+                    <div class="reply-info">
+                        <span class="author-name">{{ reply.user.display_name }}</span>
+                        <span class="reply-date">{{ reply.created_at|time_ago }}</span>
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <div class="reply-actions">
+                        <button class="reply-action-btn" 
+                                hx-get="{% url 'comments:htmx_likes' reply.id %}"
+                                hx-target="#reply-likes-{{ reply.id }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>{{ reply.likes_count }}</span>
+                        </button>
+                        
+                        {% if user == reply.user %}
+                            <button class="reply-action-btn edit-btn"
+                                    hx-get="{% url 'comments:htmx_edit_form' reply.id %}"
+                                    hx-target="#reply-edit-{{ reply.id }}"
+                                    hx-swap="outerHTML">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            
+                            <button class="reply-action-btn delete-btn"
+                                    hx-post="{% url 'comments:delete' reply.id %}"
+                                    hx-target="#reply-{{ reply.id }}"
+                                    hx-swap="outerHTML"
+                                    hx-confirm="Удалить ответ?">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        {% else %}
+                            <button class="reply-action-btn report-btn"
+                                    hx-get="{% url 'comments:htmx_report_form' reply.id %}"
+                                    hx-target="body"
+                                    hx-swap="beforeend">
+                                <i class="fas fa-flag"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="reply-content">
+                <div id="reply-edit-{{ reply.id }}">
+                    <p>{{ reply.content|linebreaks }}</p>
+                </div>
+                
+                <div id="reply-likes-{{ reply.id }}">
+                    {% include 'comments/htmx/comment_likes.html' with comment=reply %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+.replies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.reply-item {
+    background: var(--bg-primary);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.reply-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reply-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.reply-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 12px;
+}
+
+.reply-date {
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.reply-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.reply-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 6px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s;
+}
+
+.reply-action-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.reply-content p {
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin: 0;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .reply-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .reply-actions {
+        align-self: flex-start;
+    }
+}
+</style>

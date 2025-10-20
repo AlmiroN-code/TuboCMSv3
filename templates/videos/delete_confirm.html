@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить видео - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-form">
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Удалить видео</h2>
+        </div>
+        
+        <div class="delete-content">
+            <p>Вы уверены, что хотите удалить видео <strong>"{{ video.title }}"</strong>?</p>
+            <p class="warning-text">Это действие нельзя отменить. Видео и все связанные с ним данные будут удалены навсегда.</p>
+            
+            <div class="video-preview">
+                <div class="preview-thumbnail">
+                    {% if video.preview %}
+                        <video src="{{ video.preview.url }}" alt="{{ video.title }}" controls>
+                    {% else %}
+                        <div class="thumbnail-placeholder">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="preview-info">
+                    <h4>{{ video.title }}</h4>
+                    <p>{{ video.views_count|format_views }} просмотров</p>
+                    <p>{{ video.created_at|time_ago }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="delete-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i>
+                Да, удалить видео
+            </button>
+            <a href="{% url 'videos:detail' video.slug %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Отмена
+            </a>
+        </form>
+    </div>
+</div>
+
+<style>
+.delete-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.delete-form {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.delete-header {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #f5c6cb;
+}
+
+.delete-header i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.delete-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.delete-content {
+    padding: 30px;
+}
+
+.delete-content p {
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.warning-text {
+    color: #dc3545;
+    font-weight: 500;
+    background: #f8d7da;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+}
+
+.video-preview {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.preview-thumbnail {
+    width: 120px;
+    height: 68px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.preview-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 24px;
+}
+
+.preview-info {
+    flex: 1;
+}
+
+.preview-info h4 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.preview-info p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.delete-actions {
+    padding: 20px 30px;
+    background: var(--bg-secondary);
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    color: white;
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .delete-actions {
+        flex-direction: column;
+    }
+    
+    .btn, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .video-preview {
+        flex-direction: column;
+    }
+    
+    .preview-thumbnail {
+        width: 100%;
+        height: 120px;
+    }
+}
+</style>
+{% endblock %}
+

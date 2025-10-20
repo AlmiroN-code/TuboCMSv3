@@ -1,0 +1,223 @@
+{% load static %}
+{% load core_tags %}
+{% load ads_tags %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TubeCMS - Видео хостинг{% endblock %}</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/models.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if theme == 'light' %}light-theme{% else %}dark-theme{% endif %}">
+    <!-- Шапка -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="{% url 'core:home' %}">
+                        <i class="fas fa-play-circle logo-icon"></i>
+                        <h1>TubeCMS</h1>
+                    </a>
+                </div>
+                
+                <div class="search-bar">
+                    <form method="GET" action="{% url 'core:search' %}" hx-get="{% url 'core:search' %}" hx-target="#search-results" hx-trigger="keyup delay:500ms from:input[name='q']">
+                        <input type="text" name="q" placeholder="Поиск видео..." value="{{ request.GET.q }}">
+                        <i class="fas fa-search search-icon"></i>
+                    </form>
+                </div>
+                
+                <div class="account-controls">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'videos:upload' %}" title="Загрузить видео">
+                            <i class="fas fa-video"></i> Создать
+                        </a>
+                        <a href="#" title="Уведомления">
+                            <i class="fas fa-bell"></i>
+                        </a>
+                        <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <a href="{% url 'users:profile' user.username %}" class="user-avatar" title="Профиль">
+                            {% get_avatar_initial user %}
+                        </a>
+                        <a href="{% url 'users:logout' %}" title="Выйти">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    {% else %}
+                        <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <a href="{% url 'users:login' %}" class="btn">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </a>
+                        <a href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus"></i> Регистрация
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Навигация -->
+        <nav>
+            <div class="container nav-container">
+                <div class="left-nav">
+                    <a href="{% url 'core:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Все</a>
+                    {% for category in categories %}
+                        <a href="{% url 'videos:category' category.slug %}" class="nav-item">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+                
+                <div class="right-nav">
+                    <a href="{% url 'core:search' %}?sort=popular" class="nav-item">Популярное</a>
+                    <a href="{% url 'core:search' %}?sort=trending" class="nav-item">Тренды</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:subscriptions' %}" class="nav-item">Подписки</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Основной контент -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Боковая панель -->
+            {% include 'partials/sidebar.html' %}
+            
+          
+            
+            <!-- Основной контент -->
+            <main class="content">
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    <!-- Реклама перед футером -->
+    <div class="footer-ads">
+        <div class="container">
+            {% ad_banner 'footer-banner' request %}
+        </div>
+    </div>
+    
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <ul>
+                        <li><a href="#">О компании</a></li>
+                        <li><a href="#">Пресса</a></li>
+                        <li><a href="#">Вакансии</a></li>
+                        <li><a href="#">Контакты</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Для создателей</h3>
+                    <ul>
+                        <li><a href="#">TubeCMS для авторов</a></li>
+                        <li><a href="#">Монетизация</a></li>
+                        <li><a href="#">Партнерская программа</a></li>
+                        <li><a href="#">Творческие студии</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Помощь</h3>
+                    <ul>
+                        <li><a href="#">Центр поддержки</a></li>
+                        <li><a href="#">Сообщество</a></li>
+                        <li><a href="#">Правила</a></li>
+                        <li><a href="#">Безопасность</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Следите за нами</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 TubeCMS. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/htmx-handlers.js' %}"></script>
+    
+    <script>
+        // Переключение темы
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // Проверяем сохраненную тему в localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.className = savedTheme;
+            updateThemeIcon(savedTheme);
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light-theme');
+                updateThemeIcon('light-theme');
+            } else {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark-theme');
+                updateThemeIcon('dark-theme');
+            }
+        });
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'light-theme') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

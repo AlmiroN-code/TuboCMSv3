@@ -1,0 +1,96 @@
+{% load core_tags %}
+<div class="video-actions">
+    <button class="action-btn like-btn {% if user_like == 1 %}active{% endif %}" 
+            hx-post="{% url 'videos:htmx_like' video.slug %}" 
+            hx-vals='{"value": 1, "csrfmiddlewaretoken": "{{ csrf_token }}"}'
+            hx-target="#video-actions"
+            hx-swap="outerHTML">
+        <i class="fas fa-thumbs-up"></i>
+        <span>{{ video.likes_count }}</span>
+    </button>
+    
+    <button class="action-btn dislike-btn {% if user_like == -1 %}active{% endif %}" 
+            hx-post="{% url 'videos:htmx_like' video.slug %}" 
+            hx-vals='{"value": -1, "csrfmiddlewaretoken": "{{ csrf_token }}"}'
+            hx-target="#video-actions"
+            hx-swap="outerHTML">
+        <i class="fas fa-thumbs-down"></i>
+        <span>{{ video.dislikes_count }}</span>
+    </button>
+    
+    <button class="action-btn share-btn">
+        <i class="fas fa-share"></i>
+        <span>Поделиться</span>
+    </button>
+    
+    <button class="action-btn save-btn">
+        <i class="fas fa-bookmark"></i>
+        <span>Сохранить</span>
+    </button>
+    
+    {% if user.is_authenticated and user != video.user %}
+        <button class="action-btn report-btn" 
+                hx-get="{% url 'videos:report' video.slug %}"
+                hx-target="body"
+                hx-swap="beforeend">
+            <i class="fas fa-flag"></i>
+            <span>Пожаловаться</span>
+        </button>
+    {% endif %}
+</div>
+
+<style>
+.video-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 20px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background: var(--bg-secondary);
+    transform: translateY(-2px);
+}
+
+.action-btn.active {
+    background: var(--accent-color);
+    color: white;
+}
+
+.like-btn.active {
+    background: #28a745;
+}
+
+.dislike-btn.active {
+    background: #dc3545;
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .video-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .action-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+</style>

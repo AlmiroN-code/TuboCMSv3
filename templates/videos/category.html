@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ category.name }} - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <div class="category-header">
+        <div class="category-icon">
+            <i class="fas fa-{{ category.icon|default:'tag' }}"></i>
+        </div>
+        <div class="category-info">
+            <h1>{{ category.name }}</h1>
+            {% if category.description %}
+                <p class="category-description">{{ category.description }}</p>
+            {% endif %}
+            <div class="category-stats">
+                <span>{{ videos.paginator.count }} видео</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="category-content">
+        {% if videos %}
+            <div class="video-grid">
+                {% for video in videos %}
+                    {% include 'partials/video_card.html' %}
+                {% endfor %}
+            </div>
+            
+            {% if videos.has_other_pages %}
+                {% include 'partials/pagination.html' %}
+            {% endif %}
+        {% else %}
+            <div class="no-content">
+                <i class="fas fa-video"></i>
+                <h3>В этой категории пока нет видео</h3>
+                <p>Будьте первым, кто загрузит видео в эту категорию!</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'videos:upload' %}" class="btn btn-primary">Загрузить видео</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,243 @@
+{% load core_tags %}
+<div class="comment-item" id="comment-{{ comment.id }}">
+    <div class="comment-header">
+        <div class="comment-author">
+            <div class="comment-avatar">
+                {% get_avatar_initial comment.user %}
+            </div>
+            <div class="comment-info">
+                <span class="author-name">{{ comment.user.display_name }}</span>
+                <span class="comment-date">{{ comment.created_at|time_ago }}</span>
+            </div>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="comment-actions">
+                <button class="comment-action-btn" 
+                        hx-get="{% url 'comments:htmx_likes' comment.id %}"
+                        hx-target="#comment-likes-{{ comment.id }}"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span>{{ comment.likes_count }}</span>
+                </button>
+                
+                {% if user == comment.user %}
+                    <button class="comment-action-btn edit-btn"
+                            hx-get="{% url 'comments:htmx_edit_form' comment.id %}"
+                            hx-target="#comment-edit-{{ comment.id }}"
+                            hx-swap="outerHTML">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    
+                    <button class="comment-action-btn delete-btn"
+                            hx-post="{% url 'comments:delete' comment.id %}"
+                            hx-target="#comment-{{ comment.id }}"
+                            hx-swap="outerHTML"
+                            hx-confirm="Удалить комментарий?">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                {% else %}
+                    <button class="comment-action-btn report-btn"
+                            hx-get="{% url 'comments:htmx_report_form' comment.id %}"
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="comment-content">
+        <div id="comment-edit-{{ comment.id }}">
+            <p>{{ comment.content|linebreaks }}</p>
+        </div>
+        
+        <div id="comment-likes-{{ comment.id }}">
+            {% include 'comments/htmx/comment_likes.html' %}
+        </div>
+    </div>
+    
+    {% if comment.replies_count > 0 %}
+        <div class="comment-replies">
+            <button class="show-replies-btn" 
+                    hx-get="{% url 'comments:htmx_replies' comment.id %}"
+                    hx-target="#replies-{{ comment.id }}"
+                    hx-swap="innerHTML">
+                <i class="fas fa-chevron-down"></i>
+                Показать {{ comment.replies_count }} ответов
+            </button>
+            
+            <div id="replies-{{ comment.id }}" class="replies-container"></div>
+        </div>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        <div class="reply-form">
+            <button class="reply-btn" 
+                    hx-get="{% url 'comments:htmx_reply_form' comment.video.slug comment.id %}"
+                    hx-target="#reply-form-{{ comment.id }}"
+                    hx-swap="innerHTML">
+                <i class="fas fa-reply"></i>
+                Ответить
+            </button>
+            
+            <div id="reply-form-{{ comment.id }}"></div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.comment-item {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.comment-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.comment-date {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.comment-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.comment-action-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.comment-content {
+    margin-bottom: 15px;
+}
+
+.comment-content p {
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.comment-replies {
+    margin-top: 15px;
+}
+
+.show-replies-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+.show-replies-btn:hover {
+    text-decoration: underline;
+}
+
+.replies-container {
+    margin-top: 15px;
+    padding-left: 20px;
+    border-left: 2px solid var(--border-color);
+}
+
+.reply-form {
+    margin-top: 15px;
+}
+
+.reply-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+.reply-btn:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .comment-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .comment-actions {
+        align-self: flex-start;
+    }
+}
+</style>

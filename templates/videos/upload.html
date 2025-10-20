@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Загрузить видео - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-form">
+        <h2>Загрузить видео</h2>
+        
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Название видео</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-errors">
+                        {% for error in form.title.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Описание</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-errors">
+                        {% for error in form.description.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Категория</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="form-errors">
+                        {% for error in form.category.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.tags.id_for_label }}">Теги</label>
+                {{ form.tags }}
+                {% if form.tags.errors %}
+                    <div class="form-errors">
+                        {% for error in form.tags.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="video_file">Видео файл</label>
+                <input type="file" name="video_file" id="video_file" accept="video/*" required>
+                <div class="file-info">
+                    <small>Поддерживаемые форматы: MP4, AVI, MOV, WMV. Максимальный размер: 500MB</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    {{ form.is_premium }}
+                    <span class="checkmark"></span>
+                    Премиум контент
+                </label>
+            </div>
+            
+            <div class="upload-progress" id="upload-progress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submit-btn">Загрузить видео</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.upload-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.upload-form {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.upload-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-errors {
+    margin-top: 5px;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 14px;
+}
+
+.file-info {
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.upload-progress {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--bg-tertiary);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), #ff6b6b);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+#submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+document.getElementById('upload-form').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('video_file');
+    const progressDiv = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const maxSize = 500 * 1024 * 1024; // 500MB
+        
+        if (file.size > maxSize) {
+            e.preventDefault();
+            alert('Файл слишком большой. Максимальный размер: 500MB');
+            return;
+        }
+        
+        // Показать прогресс
+        progressDiv.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Загрузка...';
+        
+        // Симуляция прогресса (в реальном приложении это будет через HTMX)
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) progress = 90;
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+            
+            if (progress >= 90) {
+                clearInterval(interval);
+            }
+        }, 200);
+    }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

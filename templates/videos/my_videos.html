@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Мои видео - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="my-videos-container">
+    <div class="my-videos-header">
+        <h1>Мои видео</h1>
+        <a href="{% url 'videos:upload' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Загрузить видео
+        </a>
+    </div>
+    
+    <div class="my-videos-content">
+        {% if videos %}
+            <div class="video-grid">
+                {% for video in videos %}
+                    <div class="video-card">
+                        <a href="{% url 'videos:detail' video.slug %}">
+                            <div class="thumbnail">
+                                {% if video.preview %}
+                                    <video src="{{ video.preview.url }}" alt="{{ video.title }}" loading="lazy" muted>
+                                {% else %}
+                                    <div style="background: linear-gradient(45deg, #ff0000, #ff8c00); height: 100%;"></div>
+                                {% endif %}
+                                <span class="duration">{{ video.duration|format_duration }}</span>
+                                {% if video.status == 'processing' %}
+                                    <div class="processing-overlay">
+                                        <i class="fas fa-cog fa-spin"></i>
+                                        <span>Обработка...</span>
+                                    </div>
+                                {% elif video.status == 'draft' %}
+                                    <div class="draft-overlay">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Черновик</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <div class="video-info">
+                            <div class="video-details">
+                                <div class="video-title">{{ video.title|truncate_text:50 }}</div>
+                                <div class="video-meta">
+                                    <span>{{ video.views_count|format_views }} просмотров</span>
+                                    <span>{{ video.created_at|time_ago }}</span>
+                                </div>
+                                <div class="video-status">
+                                    <span class="status-badge status-{{ video.status }}">
+                                        {% if video.status == 'published' %}Опубликовано
+                                        {% elif video.status == 'draft' %}Черновик
+                                        {% elif video.status == 'processing' %}Обработка
+                                        {% elif video.status == 'private' %}Приватное
+                                        {% else %}{{ video.get_status_display }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="video-actions">
+                                <a href="{% url 'videos:edit' video.slug %}" class="action-btn edit-btn" title="Редактировать">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'videos:delete' video.slug %}" class="action-btn delete-btn" title="Удалить" onclick="return confirm('Удалить видео?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if videos.has_other_pages %}
+                {% include 'partials/pagination.html' %}
+            {% endif %}
+        {% else %}
+            <div class="no-content">
+                <i class="fas fa-video"></i>
+                <h3>У вас пока нет видео</h3>
+                <p>Загрузите свое первое видео и поделитесь им с миром!</p>
+                <a href="{% url 'videos:upload' %}" class="btn btn-primary">Загрузить видео</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.my-videos-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.my-videos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.my-videos-header h1 {
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.video-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow);
+    position: relative;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+}
+
+.thumbnail {
+    position: relative;
+    height: 180px;
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.processing-overlay, .draft-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.processing-overlay i {
+    font-size: 24px;
+    margin-bottom: 5px;
+    animation: spin 1s linear infinite;
+}
+
+.draft-overlay i {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.video-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 12px 12px;
+}
+
+.video-details {
+    flex: 1;
+}
+
+.video-title {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.video-meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.video-status {
+    margin-top: 8px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-published {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-draft {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-private {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.video-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.edit-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.edit-btn:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+.delete-btn {
+    background: var(--bg-tertiary);
+    color: #dc3545;
+}
+
+.delete-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.no-content {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+}
+
+.no-content i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+.no-content h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.no-content p {
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .my-videos-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .video-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .video-actions {
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
+</style>
+{% endblock %}
+

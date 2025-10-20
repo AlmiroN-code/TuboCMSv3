@@ -1,0 +1,71 @@
+<form hx-post="{% url 'comments:edit' comment.id %}" 
+      hx-target="#comment-edit-{{ comment.id }}"
+      hx-swap="outerHTML"
+      class="comment-edit-form">
+    <div class="form-group">
+        <textarea name="content" 
+                  class="form-control"
+                  rows="3"
+                  required>{{ comment.content }}</textarea>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Сохранить</button>
+        <button type="button" class="btn btn-secondary btn-sm" 
+                hx-get="{% url 'comments:htmx_likes' comment.id %}"
+                hx-target="#comment-edit-{{ comment.id }}"
+                hx-swap="outerHTML">
+            Отмена
+        </button>
+    </div>
+</form>
+
+<style>
+.comment-edit-form {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 60px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+}
+</style>

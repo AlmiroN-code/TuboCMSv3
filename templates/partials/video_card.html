@@ -1,0 +1,32 @@
+{% load core_tags %}
+<div class="video-card">
+    <a href="{% url 'videos:detail' video.slug %}">
+        <div class="thumbnail">
+            {% if video.poster %}
+                <img src="{{ video.poster.url }}" alt="{{ video.title }}" class="poster-image" loading="lazy">
+            {% else %}
+                <div class="poster-placeholder" style="background: linear-gradient(45deg, #ff0000, #ff8c00); height: 100%;"></div>
+            {% endif %}
+            
+            {% if video.preview %}
+                <video src="{{ video.preview.url }}" alt="{{ video.title }}" class="preview-video" loading="lazy" muted loop preload="metadata">
+            {% endif %}
+            
+            <span class="duration">{{ video.duration|format_duration }}</span>
+        </div>
+    </a>
+    <div class="video-info">
+        <div class="channel-avatar">
+            {% get_avatar_initial video.user %}
+        </div>
+        <div class="video-details">
+            <div class="video-title">{{ video.title|truncate_text:50 }}</div>
+            <div class="channel-name">{{ video.user.display_name }}</div>
+            <div class="video-meta">
+                <span>{{ video.views_count|format_views }} просмотров</span>
+                <span>{{ video.created_at|time_ago }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+

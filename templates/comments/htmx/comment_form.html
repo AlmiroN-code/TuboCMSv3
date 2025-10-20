@@ -1,0 +1,104 @@
+{% if user.is_authenticated %}
+<form hx-post="{% url 'comments:htmx_create' video.slug %}" 
+      hx-target="#comments-list" 
+      hx-swap="afterbegin"
+      class="comment-form">
+    {% csrf_token %}
+    {% if parent %}
+        <input type="hidden" name="parent_id" value="{{ parent.id }}">
+    {% endif %}
+    
+    <div class="form-group">
+        <textarea name="content" 
+                  placeholder="{% if parent %}Ответить на комментарий...{% else %}Добавить комментарий...{% endif %}" 
+                  required
+                  class="form-control"
+                  rows="3"></textarea>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-sm">
+            {% if parent %}Ответить{% else %}Комментировать{% endif %}
+        </button>
+        {% if parent %}
+            <button type="button" class="btn btn-secondary btn-sm" 
+                    hx-get="{% url 'comments:htmx_form' video.slug %}"
+                    hx-target="#comment-form-container"
+                    hx-swap="innerHTML">
+                Отмена
+            </button>
+        {% endif %}
+    </div>
+</form>
+
+<style>
+.comment-form {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 60px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+}
+</style>
+{% else %}
+<div class="login-prompt">
+    <p>Войдите, чтобы оставить комментарий</p>
+    <a href="{% url 'users:login' %}" class="btn btn-primary">Войти</a>
+</div>
+
+<style>
+.login-prompt {
+    text-align: center;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.login-prompt p {
+    margin-bottom: 15px;
+    color: var(--text-secondary);
+}
+</style>
+{% endif %}
