@@ -91,12 +91,21 @@ if ! id "$PROJECT_USER" &>/dev/null; then
     usermod -aG www-data $PROJECT_USER
 fi
 
+# Generate secure database password
+DB_PASSWORD=$(openssl rand -base64 16 | tr -d '=+/' | cut -c1-16)
+
 # Configure PostgreSQL
 log "Configuring PostgreSQL..."
-sudo -u postgres createuser --createdb --no-superuser --no-createrole $POSTGRES_USER || true
-sudo -u postgres psql -c "ALTER USER $POSTGRES_USER WITH PASSWORD 'secure_password_change_me';" || true
-sudo -u postgres createdb --owner=$POSTGRES_USER $POSTGRES_DB || true
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;" || true
+# Start PostgreSQL service if not running
+systemctl start postgresql
+systemctl enable postgresql
+
+# Create user and database
+sudo -u postgres psql -c "DROP USER IF EXISTS $POSTGRES_USER;" || true
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS $POSTGRES_DB;" || true
+sudo -u postgres psql -c "CREATE USER $POSTGRES_USER WITH CREATEDB PASSWORD '$DB_PASSWORD';"
+sudo -u postgres psql -c "CREATE DATABASE $POSTGRES_DB OWNER $POSTGRES_USER;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
 
 # Configure Redis
 log "Configuring Redis..."
@@ -149,7 +158,7 @@ ALLOWED_HOSTS=$DOMAIN,www.$DOMAIN,localhost,127.0.0.1
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=$POSTGRES_DB
 DB_USER=$POSTGRES_USER
-DB_PASSWORD=secure_password_change_me
+DB_PASSWORD=$DB_PASSWORD
 DB_HOST=localhost
 DB_PORT=5432
 
