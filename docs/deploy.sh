@@ -216,7 +216,12 @@ sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=co
 # Run migrations
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production || error "Django migrations failed"
 
+# Ensure staticfiles directory has correct ownership before collection
+chown -R $PROJECT_USER:www-data $PROJECT_DIR/staticfiles
+chmod -R 775 $PROJECT_DIR/staticfiles
+
 # Collect static files
+log "Collecting static files..."
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py collectstatic --noinput --settings=config.settings.production || error "Static files collection failed"
 
 # Create Gunicorn systemd service
@@ -362,13 +367,24 @@ mkdir -p $PROJECT_DIR/{media,staticfiles,logs}
 mkdir -p $PROJECT_DIR/media/{videos,posters,previews,avatars,models}
 # Create log directories for production settings
 mkdir -p /var/log/django
+
+# Set ownership first
 chown -R $PROJECT_USER:www-data $PROJECT_DIR
 chown -R $PROJECT_USER:www-data /var/log/django
+
+# Set permissions
 chmod -R 755 $PROJECT_DIR
 chmod -R 775 $PROJECT_DIR/media
 chmod -R 775 $PROJECT_DIR/staticfiles
 chmod -R 775 $PROJECT_DIR/logs
 chmod -R 775 /var/log/django
+
+# Ensure staticfiles directory exists and has correct permissions
+if [ ! -d "$PROJECT_DIR/staticfiles" ]; then
+    mkdir -p $PROJECT_DIR/staticfiles
+    chown $PROJECT_USER:www-data $PROJECT_DIR/staticfiles
+    chmod 775 $PROJECT_DIR/staticfiles
+fi
 
 # Start and enable services
 log "Starting services..."
