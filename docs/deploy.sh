@@ -13,7 +13,7 @@ PROJECT_USER="rextube"
 PROJECT_DIR="/var/www/rextube.online"
 PYTHON_VERSION="3.12"
 POSTGRES_DB="rextube"
-PROJECT_USER="rextube"
+POSTGRES_USER="rextube"
 REDIS_PORT="6379"
 
 # Colors for output
@@ -254,9 +254,23 @@ fi
 # Run migrations
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production || error "Django migrations failed"
 
-# Ensure staticfiles directory has correct ownership before collection
+# Create and set up directories before collecting static files
+log "Setting up staticfiles and media directories..."
+mkdir -p $PROJECT_DIR/{media,staticfiles}
+mkdir -p $PROJECT_DIR/media/{videos,posters,previews,avatars,models}
+
+# Ensure staticfiles and media directories have correct ownership and permissions
+if [ ! -d "$PROJECT_DIR/staticfiles" ]; then
+    mkdir -p $PROJECT_DIR/staticfiles
+fi
+if [ ! -d "$PROJECT_DIR/media" ]; then
+    mkdir -p $PROJECT_DIR/media
+fi
+
 chown -R $PROJECT_USER:www-data $PROJECT_DIR/staticfiles
+chown -R $PROJECT_USER:www-data $PROJECT_DIR/media
 chmod -R 775 $PROJECT_DIR/staticfiles
+chmod -R 775 $PROJECT_DIR/media
 
 # Collect static files
 log "Collecting static files..."
@@ -399,10 +413,9 @@ ufw allow 'Nginx Full'
 ufw allow OpenSSH
 ufw --force enable
 
-# Create directories and set permissions
-log "Setting up directories and permissions..."
-mkdir -p $PROJECT_DIR/{media,staticfiles,logs}
-mkdir -p $PROJECT_DIR/media/{videos,posters,previews,avatars,models}
+# Create remaining directories and set permissions
+log "Setting up remaining directories and permissions..."
+mkdir -p $PROJECT_DIR/logs
 # Create log directories for production settings
 mkdir -p /var/log/django
 
@@ -416,13 +429,6 @@ chmod -R 775 $PROJECT_DIR/media
 chmod -R 775 $PROJECT_DIR/staticfiles
 chmod -R 775 $PROJECT_DIR/logs
 chmod -R 775 /var/log/django
-
-# Ensure staticfiles directory exists and has correct permissions
-if [ ! -d "$PROJECT_DIR/staticfiles" ]; then
-    mkdir -p $PROJECT_DIR/staticfiles
-    chown $PROJECT_USER:www-data $PROJECT_DIR/staticfiles
-    chmod 775 $PROJECT_DIR/staticfiles
-fi
 
 # Start and enable services
 log "Starting services..."
@@ -507,6 +513,18 @@ git pull origin main
 
 # Update dependencies
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install -r requirements/production.txt
+
+# Ensure directories exist and have correct permissions before running migrations and collecting static files
+if [ ! -d "$PROJECT_DIR/staticfiles" ]; then
+    mkdir -p $PROJECT_DIR/staticfiles
+    chown $PROJECT_USER:www-data $PROJECT_DIR/staticfiles
+    chmod 775 $PROJECT_DIR/staticfiles
+fi
+if [ ! -d "$PROJECT_DIR/media" ]; then
+    mkdir -p $PROJECT_DIR/media
+    chown $PROJECT_USER:www-data $PROJECT_DIR/media 
+    chmod 775 $PROJECT_DIR/media
+fi
 
 # Run migrations and collect static files
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production
