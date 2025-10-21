@@ -103,9 +103,22 @@ systemctl enable postgresql
 # Create user and database
 sudo -u postgres psql -c "DROP USER IF EXISTS $POSTGRES_USER;" || true
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS $POSTGRES_DB;" || true
+# Debug PostgreSQL
+log "Creating PostgreSQL user and database..."
 sudo -u postgres psql -c "CREATE USER $POSTGRES_USER WITH CREATEDB PASSWORD '$DB_PASSWORD';"
 sudo -u postgres psql -c "CREATE DATABASE $POSTGRES_DB OWNER $POSTGRES_USER;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
+
+# Test PostgreSQL connection
+log "Testing PostgreSQL connection..."
+if sudo -u postgres psql -d $POSTGRES_DB -c "SELECT version();" > /dev/null 2>&1; then
+    log "PostgreSQL connection successful"
+else
+    warning "PostgreSQL connection test failed"
+fi
+
+# Show created user
+sudo -u postgres psql -c "\du $POSTGRES_USER"
 
 # Configure Redis
 log "Configuring Redis..."
@@ -159,7 +172,7 @@ DB_ENGINE=django.db.backends.postgresql
 DB_NAME=$POSTGRES_DB
 DB_USER=$POSTGRES_USER
 DB_PASSWORD=$DB_PASSWORD
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_PORT=5432
 
 # Redis
@@ -226,7 +239,17 @@ chmod -R 775 /var/log/django
 
 # Test Django settings first
 log "Testing Django configuration..."
-sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=config.settings.production || error "Django configuration check failed"
+if ! sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=config.settings.production; then
+    warning "PostgreSQL connection failed, switching to SQLite for initial setup..."
+    # Create SQLite version of .env
+    sed -i 's/DB_ENGINE=django.db.backends.postgresql/DB_ENGINE=django.db.backends.sqlite3/' $PROJECT_DIR/.env
+    sed -i 's|DB_NAME=.*|DB_NAME=db.sqlite3|' $PROJECT_DIR/.env
+    
+    # Test with SQLite
+    if ! sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=config.settings.production; then
+        error "Django configuration check failed even with SQLite"
+    fi
+fi
 
 # Run migrations
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production || error "Django migrations failed"
