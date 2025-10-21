@@ -12,8 +12,6 @@ PROJECT_NAME="rextube"
 PROJECT_USER="rextube"
 PROJECT_DIR="/var/www/rextube.online"
 PYTHON_VERSION="3.12"
-POSTGRES_DB="rextube"
-POSTGRES_USER="rextube"
 REDIS_PORT="6379"
 
 # Colors for output
@@ -59,8 +57,6 @@ apt install -y \
     python3-venv \
     python3-dev \
     python3-pip \
-    postgresql \
-    postgresql-contrib \
     redis-server \
     nginx \
     git \
@@ -68,8 +64,6 @@ apt install -y \
     wget \
     unzip \
     build-essential \
-    libpq-dev \
-    postgresql-server-dev-all \
     libjpeg-dev \
     libpng-dev \
     libwebp-dev \
@@ -91,34 +85,10 @@ if ! id "$PROJECT_USER" &>/dev/null; then
     usermod -aG www-data $PROJECT_USER
 fi
 
-# Generate secure database password
-DB_PASSWORD=$(openssl rand -base64 16 | tr -d '=+/' | cut -c1-16)
-
-# Configure PostgreSQL
-log "Configuring PostgreSQL..."
-# Start PostgreSQL service if not running
-systemctl start postgresql
-systemctl enable postgresql
-
-# Create user and database
-sudo -u postgres psql -c "DROP USER IF EXISTS $POSTGRES_USER;" || true
-sudo -u postgres psql -c "DROP DATABASE IF EXISTS $POSTGRES_DB;" || true
-# Debug PostgreSQL
-log "Creating PostgreSQL user and database..."
-sudo -u postgres psql -c "CREATE USER $POSTGRES_USER WITH CREATEDB PASSWORD '$DB_PASSWORD';"
-sudo -u postgres psql -c "CREATE DATABASE $POSTGRES_DB OWNER $POSTGRES_USER;"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
-
-# Test PostgreSQL connection
-log "Testing PostgreSQL connection..."
-if sudo -u postgres psql -d $POSTGRES_DB -c "SELECT version();" > /dev/null 2>&1; then
-    log "PostgreSQL connection successful"
-else
-    warning "PostgreSQL connection test failed"
-fi
-
-# Show created user
-sudo -u postgres psql -c "\du $POSTGRES_USER"
+# Setup SQLite database
+log "Setting up SQLite database..."
+# SQLite database file will be created automatically by Django migrations
+# Ensure proper permissions will be set after migrations
 
 # Configure Redis
 log "Configuring Redis..."
@@ -167,13 +137,9 @@ SECRET_KEY=$(openssl rand -base64 32)
 DEBUG=False
 ALLOWED_HOSTS=$DOMAIN,www.$DOMAIN,localhost,127.0.0.1
 
-# Database
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=$POSTGRES_DB
-DB_USER=$POSTGRES_USER
-DB_PASSWORD=$DB_PASSWORD
-DB_HOST=127.0.0.1
-DB_PORT=5432
+# Database (SQLite)
+DB_ENGINE=django.db.backends.sqlite3
+DB_NAME=$PROJECT_DIR/db.sqlite3
 
 # Redis
 REDIS_URL=redis://localhost:6379/0
@@ -216,7 +182,7 @@ log "Installing Python dependencies..."
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install --upgrade pip
 
 # Install essential packages first
-sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install psycopg2-binary gunicorn transliterate python-decouple
+sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install gunicorn transliterate python-decouple
 
 if [ -f "$PROJECT_DIR/requirements/production.txt" ]; then
     sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install -r $PROJECT_DIR/requirements/production.txt
@@ -237,22 +203,21 @@ chown -R $PROJECT_USER:www-data /var/log/django
 chmod -R 775 $PROJECT_DIR/logs
 chmod -R 775 /var/log/django
 
-# Test Django settings first
+# Test Django settings
 log "Testing Django configuration..."
 if ! sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=config.settings.production; then
-    warning "PostgreSQL connection failed, switching to SQLite for initial setup..."
-    # Create SQLite version of .env
-    sed -i 's/DB_ENGINE=django.db.backends.postgresql/DB_ENGINE=django.db.backends.sqlite3/' $PROJECT_DIR/.env
-    sed -i 's|DB_NAME=.*|DB_NAME=db.sqlite3|' $PROJECT_DIR/.env
-    
-    # Test with SQLite
-    if ! sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py check --settings=config.settings.production; then
-        error "Django configuration check failed even with SQLite"
-    fi
+    error "Django configuration check failed"
 fi
 
 # Run migrations
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production || error "Django migrations failed"
+
+# Set proper permissions for SQLite database file
+if [ -f "$PROJECT_DIR/db.sqlite3" ]; then
+    chown $PROJECT_USER:www-data $PROJECT_DIR/db.sqlite3
+    chmod 664 $PROJECT_DIR/db.sqlite3
+    log "SQLite database permissions set"
+fi
 
 # Create and set up directories before collecting static files
 log "Setting up staticfiles and media directories..."
@@ -528,6 +493,13 @@ fi
 
 # Run migrations and collect static files
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=config.settings.production
+
+# Set proper permissions for SQLite database file
+if [ -f "$PROJECT_DIR/db.sqlite3" ]; then
+    chown $PROJECT_USER:www-data $PROJECT_DIR/db.sqlite3
+    chmod 664 $PROJECT_DIR/db.sqlite3
+fi
+
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py collectstatic --noinput --settings=config.settings.production
 
 # Restart services
@@ -547,11 +519,11 @@ info "=== DEPLOYMENT SUMMARY ==="
 info "Domain: $DOMAIN"
 info "Project directory: $PROJECT_DIR"
 info "Project user: $PROJECT_USER"
-info "Database: $POSTGRES_DB"
+info "Database: SQLite (db.sqlite3)"
 info ""
 info "=== NEXT STEPS ==="
 info "1. Project files automatically cloned from GitHub"
-info "2. Update database password in $PROJECT_DIR/.env"
+info "2. Database configuration already set (SQLite)"
 info "3. Configure email settings in $PROJECT_DIR/.env"
 info "4. Create Django superuser: sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python $PROJECT_DIR/manage.py createsuperuser --settings=config.settings.production"
 info "5. Restart services: systemctl restart rextube rextube-celery rextube-celery-beat"
@@ -562,7 +534,7 @@ info "View logs: journalctl -u rextube -f"
 info "Restart services: systemctl restart rextube"
 info ""
 info "=== SECURITY NOTES ==="
-warning "1. Change the database password in PostgreSQL and .env file"
+warning "1. SQLite database is stored in $PROJECT_DIR/db.sqlite3"
 warning "2. Configure proper email settings"
 warning "3. Review firewall settings"
 warning "4. Setup regular backups"
