@@ -8,12 +8,12 @@ set -e  # Exit on any error
 
 # Configuration
 DOMAIN="rextube.online"
-PROJECT_NAME="tubecms"
-PROJECT_USER="tubecms"
-PROJECT_DIR="/var/www/tubecms"
+PROJECT_NAME="rextube"
+PROJECT_USER="rextube"
+PROJECT_DIR="/var/www/rextube.online"
 PYTHON_VERSION="3.12"
-POSTGRES_DB="tubecms"
-POSTGRES_USER="tubecms"
+POSTGRES_DB="rextube"
+PROJECT_USER="rextube"
 REDIS_PORT="6379"
 
 # Colors for output
@@ -226,9 +226,9 @@ sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py collectstatic --noi
 
 # Create Gunicorn systemd service
 log "Creating Gunicorn systemd service..."
-cat > /etc/systemd/system/tubecms.service << EOF
+cat > /etc/systemd/system/rextube.service << EOF
 [Unit]
-Description=TubeCMS Gunicorn daemon
+Description=RexTube Gunicorn daemon
 After=network.target
 
 [Service]
@@ -236,7 +236,7 @@ Type=notify
 User=$PROJECT_USER
 Group=www-data
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:$PROJECT_DIR/tubecms.sock config.wsgi:application
+ExecStart=$PROJECT_DIR/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:$PROJECT_DIR/rextube.sock config.wsgi:application
 ExecReload=/bin/kill -s HUP \$MAINPID
 Restart=on-failure
 RestartSec=5
@@ -250,9 +250,9 @@ EOF
 
 # Create Celery worker systemd service
 log "Creating Celery worker systemd service..."
-cat > /etc/systemd/system/tubecms-celery.service << EOF
+cat > /etc/systemd/system/rextube-celery.service << EOF
 [Unit]
-Description=TubeCMS Celery Worker
+Description=RexTube Celery Worker
 After=network.target redis.service
 
 [Service]
@@ -272,9 +272,9 @@ EOF
 
 # Create Celery beat systemd service
 log "Creating Celery beat systemd service..."
-cat > /etc/systemd/system/tubecms-celery-beat.service << EOF
+cat > /etc/systemd/system/rextube-celery-beat.service << EOF
 [Unit]
-Description=TubeCMS Celery Beat
+Description=RexTube Celery Beat
 After=network.target redis.service
 
 [Service]
@@ -327,7 +327,7 @@ server {
     
     # Main application
     location / {
-        proxy_pass http://unix:$PROJECT_DIR/tubecms.sock;
+        proxy_pass http://unix:$PROJECT_DIR/rextube.sock;
         proxy_set_header Host \$http_host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -390,40 +390,40 @@ fi
 log "Starting services..."
 systemctl daemon-reload
 systemctl enable nginx
-systemctl enable tubecms
-systemctl enable tubecms-celery
-systemctl enable tubecms-celery-beat
+systemctl enable rextube
+systemctl enable rextube-celery
+systemctl enable rextube-celery-beat
 
 systemctl restart nginx
 
 # Start services with detailed error checking
-log "Starting TubeCMS services..."
-if systemctl start tubecms; then
-    log "TubeCMS service started successfully"
+log "Starting RexTube services..."
+if systemctl start rextube; then
+    log "RexTube service started successfully"
 else
-    error "TubeCMS service failed to start. Check logs with: journalctl -u tubecms -n 50"
+    error "RexTube service failed to start. Check logs with: journalctl -u rextube -n 50"
 fi
 
-if systemctl start tubecms-celery; then
+if systemctl start rextube-celery; then
     log "Celery worker started successfully"
 else
-    warning "Celery worker failed to start. Check logs with: journalctl -u tubecms-celery -n 50"
+    warning "Celery worker failed to start. Check logs with: journalctl -u rextube-celery -n 50"
 fi
 
-if systemctl start tubecms-celery-beat; then
+if systemctl start rextube-celery-beat; then
     log "Celery beat started successfully"
 else
-    warning "Celery beat failed to start. Check logs with: journalctl -u tubecms-celery-beat -n 50"
+    warning "Celery beat failed to start. Check logs with: journalctl -u rextube-celery-beat -n 50"
 fi
 
 # Check service status
 log "Checking service status..."
-systemctl --no-pager status tubecms nginx
+systemctl --no-pager status rextube nginx
 
 # Test socket file
-if [ -S "$PROJECT_DIR/tubecms.sock" ]; then
+if [ -S "$PROJECT_DIR/rextube.sock" ]; then
     log "Socket file created successfully"
-    ls -la $PROJECT_DIR/tubecms.sock
+    ls -la $PROJECT_DIR/rextube.sock
 else
     warning "Socket file not found. This may cause 502 errors."
 fi
@@ -439,7 +439,7 @@ fi
 
 # Setup log rotation
 log "Setting up log rotation..."
-cat > /etc/logrotate.d/tubecms << EOF
+cat > /etc/logrotate.d/rextube << EOF
 $PROJECT_DIR/logs/*.log {
     daily
     missingok
@@ -449,17 +449,17 @@ $PROJECT_DIR/logs/*.log {
     notifempty
     create 644 $PROJECT_USER $PROJECT_USER
     postrotate
-        systemctl reload tubecms
+        systemctl reload rextube
     endscript
 }
 EOF
 
 # Create maintenance script
 log "Creating maintenance scripts..."
-cat > /usr/local/bin/tubecms-update.sh << 'EOF'
+cat > /usr/local/bin/rextube-update.sh << 'EOF'
 #!/bin/bash
-PROJECT_DIR="/var/www/tubecms"
-PROJECT_USER="tubecms"
+PROJECT_DIR="/var/www/rextube.online"
+PROJECT_USER="rextube"
 
 echo "Updating TubeCMS..."
 cd $PROJECT_DIR
@@ -475,14 +475,14 @@ sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py migrate --settings=
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python manage.py collectstatic --noinput --settings=config.settings.production
 
 # Restart services
-systemctl restart tubecms
-systemctl restart tubecms-celery
-systemctl restart tubecms-celery-beat
+systemctl restart rextube
+systemctl restart rextube-celery
+systemctl restart rextube-celery-beat
 
 echo "Update completed!"
 EOF
 
-chmod +x /usr/local/bin/tubecms-update.sh
+chmod +x /usr/local/bin/rextube-update.sh
 
 # Display completion message
 log "Deployment completed successfully!"
@@ -498,12 +498,12 @@ info "1. Project files automatically cloned from GitHub"
 info "2. Update database password in $PROJECT_DIR/.env"
 info "3. Configure email settings in $PROJECT_DIR/.env"
 info "4. Create Django superuser: sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python $PROJECT_DIR/manage.py createsuperuser --settings=config.settings.production"
-info "5. Restart services: systemctl restart tubecms tubecms-celery tubecms-celery-beat"
+info "5. Restart services: systemctl restart rextube rextube-celery rextube-celery-beat"
 info ""
 info "=== USEFUL COMMANDS ==="
-info "Update project: /usr/local/bin/tubecms-update.sh"
-info "View logs: journalctl -u tubecms -f"
-info "Restart services: systemctl restart tubecms"
+info "Update project: /usr/local/bin/rextube-update.sh"
+info "View logs: journalctl -u rextube -f"
+info "Restart services: systemctl restart rextube"
 info ""
 info "=== SECURITY NOTES ==="
 warning "1. Change the database password in PostgreSQL and .env file"
@@ -515,8 +515,8 @@ info "Your TubeCMS installation should now be accessible at: https://$DOMAIN"
 info ""
 info "=== TROUBLESHOOTING 502 ERRORS ==="
 info "If you get 502 Bad Gateway, run these commands:"
-info "1. Check TubeCMS service: systemctl status tubecms"
-info "2. Check logs: journalctl -u tubecms -f"
-info "3. Check socket file: ls -la /var/www/tubecms/tubecms.sock"
-info "4. Test Django directly: sudo -u tubecms /var/www/tubecms/venv/bin/python /var/www/tubecms/manage.py runserver 127.0.0.1:8000 --settings=config.settings.production"
+info "1. Check RexTube service: systemctl status rextube"
+info "2. Check logs: journalctl -u rextube -f"
+info "3. Check socket file: ls -la $PROJECT_DIR/rextube.sock"
+info "4. Test Django directly: sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/python $PROJECT_DIR/manage.py runserver 127.0.0.1:8000 --settings=config.settings.production"
 info "5. Check nginx error logs: tail -f /var/log/nginx/error.log"
