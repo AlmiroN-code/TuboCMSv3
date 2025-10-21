@@ -1,21 +1,51 @@
 from .base import *
 import os
+from decouple import config, Csv
 
 # Production settings
-DEBUG = False
-ALLOWED_HOSTS = ['rextube.online', 'www.rextube.online', 'localhost', '127.0.0.1']
+DEBUG = config('DEBUG', default=False, cast=bool)
+SECRET_KEY = config('SECRET_KEY')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='rextube.online,www.rextube.online', cast=Csv())
 
-# Database
+# Production database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': {
+            'connect_timeout': 20,
+        },
     }
 }
 
-# Static files
-STATIC_ROOT = '/var/www/rextube.online/staticfiles/'
-MEDIA_ROOT = '/var/www/rextube.online/media/'
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/1'),
+        'KEY_PREFIX': 'tubecms',
+    }
+}
+
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# Static and media files
+STATIC_ROOT = config('STATIC_ROOT', default='/var/www/tubecms/staticfiles/')
+MEDIA_ROOT = config('MEDIA_ROOT', default='/var/www/tubecms/media/')
+
+# Use WhiteNoise for static files
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Security
 SECURE_BROWSER_XSS_FILTER = True
@@ -45,7 +75,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/django/rextube.log',
+            'filename': config('LOG_FILE', default='/var/www/tubecms/logs/django.log'),
             'formatter': 'verbose',
         },
         'console': {
