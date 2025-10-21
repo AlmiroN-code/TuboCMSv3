@@ -69,6 +69,7 @@ apt install -y \
     unzip \
     build-essential \
     libpq-dev \
+    postgresql-server-dev-all \
     libjpeg-dev \
     libpng-dev \
     libwebp-dev \
@@ -92,8 +93,9 @@ fi
 
 # Configure PostgreSQL
 log "Configuring PostgreSQL..."
-sudo -u postgres psql -c "CREATE USER $POSTGRES_USER WITH PASSWORD 'secure_password_change_me';" || true
-sudo -u postgres psql -c "CREATE DATABASE $POSTGRES_DB OWNER $POSTGRES_USER;" || true
+sudo -u postgres createuser --createdb --no-superuser --no-createrole $POSTGRES_USER || true
+sudo -u postgres psql -c "ALTER USER $POSTGRES_USER WITH PASSWORD 'secure_password_change_me';" || true
+sudo -u postgres createdb --owner=$POSTGRES_USER $POSTGRES_DB || true
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;" || true
 
 # Configure Redis
@@ -144,6 +146,7 @@ DEBUG=False
 ALLOWED_HOSTS=$DOMAIN,www.$DOMAIN,localhost,127.0.0.1
 
 # Database
+DB_ENGINE=django.db.backends.postgresql
 DB_NAME=$POSTGRES_DB
 DB_USER=$POSTGRES_USER
 DB_PASSWORD=secure_password_change_me
@@ -189,13 +192,16 @@ chmod 600 $PROJECT_DIR/.env
 # Install Python dependencies
 log "Installing Python dependencies..."
 sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install --upgrade pip
+
+# Install essential packages first
+sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install psycopg2-binary gunicorn transliterate python-decouple
+
 if [ -f "$PROJECT_DIR/requirements/production.txt" ]; then
     sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install -r $PROJECT_DIR/requirements/production.txt
 else
     # Install basic requirements if file not found
-    sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install Django==5.0.1 psycopg2-binary celery redis django-extensions python-decouple
+    sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install Django==5.0.1 celery redis django-extensions whitenoise
 fi
-sudo -u $PROJECT_USER $PROJECT_DIR/venv/bin/pip install gunicorn transliterate
 
 # Run Django setup
 log "Running Django migrations and setup..."
