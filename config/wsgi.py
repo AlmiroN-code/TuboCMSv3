@@ -1,5 +1,5 @@
 """
-WSGI config for TubeCMS project.
+WSGI config for RexTube project.
 """
 import os
 from django.core.wsgi import get_wsgi_application

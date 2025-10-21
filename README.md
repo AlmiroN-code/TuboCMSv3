@@ -1,4 +1,4 @@
-# TubeCMS - Видео хостинг на Django
+# RexTube - Видео хостинг на Django
 
 Полнофункциональный видео-хостинг, построенный на Django 5.x с использованием HTMX для динамических взаимодействий.
 
@@ -14,7 +14,7 @@
 ## 📁 Структура проекта
 
 ```
-TubeCMS/
+RexTube/
 ├── config/                          # Основная конфигурация
 │   ├── settings/
 │   │   ├── base.py
@@ -40,8 +40,8 @@ TubeCMS/
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <repository-url>
-cd TubeCMS
+git clone https://github.com/AlmiroN-code/TuboCMSv3.git
+cd TuboCMSv3
 ```
 
 ### 2. Создание виртуального окружения
@@ -71,7 +71,7 @@ cp env.example .env
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-DB_NAME=tubocms
+DB_NAME=rextube
 DB_USER=postgres
 DB_PASSWORD=your-password
 DB_HOST=localhost

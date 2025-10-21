@@ -1,5 +1,5 @@
 """
-ASGI config for TubeCMS project.
+ASGI config for RexTube project.
 """
 import os
 from django.core.asgi import get_asgi_application

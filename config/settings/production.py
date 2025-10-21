@@ -27,7 +27,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': config('REDIS_URL', default='redis://localhost:6379/1'),
-        'KEY_PREFIX': 'tubecms',
+        'KEY_PREFIX': 'rextube',
     }
 }
 
@@ -75,7 +75,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': config('LOG_FILE', default='/var/www/tubecms/logs/django.log'),
+            'filename': config('LOG_FILE', default=os.path.join(BASE_DIR, 'logs', 'django.log')),
             'formatter': 'verbose',
         },
         'console': {

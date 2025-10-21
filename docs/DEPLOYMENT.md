@@ -1,10 +1,10 @@
-# TubeCMS Deployment Guide
+# RexTube Deployment Guide
 
-Руководство по развертыванию TubeCMS на Ubuntu 24.04 для домена rextube.online.
+Руководство по развертыванию RexTube на Ubuntu 24.04 для домена rextube.online.
 
 **GitHub репозиторий**: https://github.com/AlmiroN-code/TuboCMSv3.git
 
-> 🎥 **TubeCMS** - современная платформа для хостинга видео на Django 5.x с HTMX, Celery и полной системой обработки видео.
+> 🎥 **RexTube** - современная платформа для хостинга видео на Django 5.x с HTMX, Celery и полной системой обработки видео.
 
 ## 🚀 Автоматическое развертывание
 
@@ -281,7 +281,7 @@ save 60 10000
 
 ## 💡 Краткое резюме
 
-**TubeCMS** - полнофункциональная платформа для хостинга видео с:
+**RexTube** - полнофункциональная платформа для хостинга видео с:
 
 - 🌍 **Современный стек**: Django 5.x + HTMX + Bootstrap 5
 - 🎥 **Обработка видео**: FFmpeg + Celery для асинхронной конвертации
@@ -295,4 +295,4 @@ save 60 10000
 - **Техническая документация**: `/docs/VIDEO_PROCESSING.md`
 - **Экспресс-развертывание**: `curl -sSL https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv3/main/docs/quick-deploy.sh | sudo bash`
 
-**🎉 Поздравляем! TubeCMS успешно развернут на https://rextube.online** 🎆
+**🎉 Поздравляем! RexTube успешно развернут на https://rextube.online** 🎆

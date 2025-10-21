@@ -1,5 +1,5 @@
 """
-Base settings for TubeCMS project.
+Base settings for RexTube project.
 """
 import os
 from pathlib import Path
