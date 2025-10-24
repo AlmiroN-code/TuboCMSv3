@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Вход - TubeCMS{% endblock %}
+{% block title %}Login - TubeCMS{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-form">
-        <h2>Вход в TubeCMS</h2>
+        <h2>Login in sustem</h2>
         
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">Имя пользователя или Email</label>
+                <label for="{{ form.username.id_for_label }}">Username or Email</label>
                 {{ form.username }}
                 {% if form.username.errors %}
                     <div class="form-errors">
@@ -22,7 +22,7 @@
             </div>
             
             <div class="form-group">
-                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                <label for="{{ form.password.id_for_label }}">Password</label>
                 {{ form.password }}
                 {% if form.password.errors %}
                     <div class="form-errors">
@@ -33,11 +33,11 @@
                 {% endif %}
             </div>
             
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
         
         <div class="auth-links">
-            <p>Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a></p>
+            <p>Don't have an account? <a href="{% url 'users:register' %}">Register</a></p>
         </div>
     </div>
 </div>
