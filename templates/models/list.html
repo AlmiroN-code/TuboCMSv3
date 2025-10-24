@@ -1,17 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Модели{% endblock %}
+{% block title %}Most popular pornstars{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
         
         <!-- Main content -->
-        <div class="col-md-9">
             <div class="models-header">
-                <h1>Модели</h1>
-                <p>Найдите свою любимую модель</p>
+                <h1>Most popular pornstars</h1>
+                <p>Find your favorite porn model</p>
             </div>
             
             <!-- Filters -->
@@ -67,9 +64,7 @@
             
             <!-- Models grid -->
             <div class="models-grid">
-                <div class="row">
                     {% for model in models %}
-                    <div class="col-md-3 col-sm-6 mb-4">
                         <div class="model-card">
                             <a href="{% url 'models:detail' model.slug %}" class="model-link">
                                 <div class="model-avatar">
@@ -102,7 +97,6 @@
                                 </div>
                             </a>
                         </div>
-                    </div>
                     {% empty %}
                     <div class="col-12">
                         <div class="text-center py-5">
@@ -111,7 +105,6 @@
                         </div>
                     </div>
                     {% endfor %}
-                </div>
             </div>
             
             <!-- Pagination -->
@@ -142,9 +135,6 @@
                 </ul>
             </nav>
             {% endif %}
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 

@@ -1,52 +1,41 @@
-
 {% load ads_tags %}
 <aside class="sidebar">
-    <div class="sidebar-section">
-        <h3>Основное</h3>
-        <ul>
-            <li><a href="{% url 'core:home' %}"><i class="fas fa-home"></i> Главная</a></li>
-            <li><a href="{% url 'core:search' %}?sort=trending"><i class="fas fa-fire"></i> Тренды</a></li>
-            <li><a href="{% url 'core:categories' %}"><i class="fas fa-folder"></i> Категории</a></li>
-            <li><a href="{% url 'models:list' %}"><i class="fas fa-users"></i> Модели</a></li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'users:profile' user.username %}"><i class="fas fa-history"></i> История</a></li>
-                <li><a href="#"><i class="fas fa-clock"></i> Смотреть позже</a></li>
-                <li><a href="#"><i class="fas fa-thumbs-up"></i> Понравившиеся</a></li>
-            {% endif %}
-        </ul>
-    </div>
-    
-    {% if user.is_authenticated %}
-    <div class="sidebar-section">
-        <h3>Подписки</h3>
-        <ul>
-            {% for subscription in user.subscriptions.all|slice:":5" %}
-                <li><a href="{% url 'users:profile' subscription.channel.username %}"><i class="fas fa-user-circle"></i> {{ subscription.channel.username }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-    
-    {% if user.model_profile %}
-    <div class="sidebar-section">
-        <h3>Модель</h3>
-        <ul>
-            <li><a href="{% url 'models:detail' user.model_profile.slug %}"><i class="fas fa-user"></i> Мой профиль</a></li>
-            <li><a href="{% url 'admin:videos_video_add' %}"><i class="fas fa-plus"></i> Добавить видео</a></li>
-            <li><a href="{% url 'admin:models_model_change' user.model_profile.id %}"><i class="fas fa-edit"></i> Редактировать профиль</a></li>
-        </ul>
-    </div>
-    {% endif %}
-    {% endif %}
-    
-    <div class="sidebar-section">
-        <h3>Категории</h3>
-        <ul>
-            {% for category in categories %}
-                <li><a href="{% url 'videos:category' category.slug %}"><i class="fas fa-{{ category.icon|default:'tag' }}"></i> {{ category.name }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    {% ad_banner 'sidebar-banner' request %}
+	<div class="sidebar-section">
+		<ul>
+			<li><a href="{% url 'core:search' %}?sort=trending" class="{% if request.resolver_match.url_name == 'search' and request.GET.sort == 'trending' %}active{% endif %}"><i class="fas fa-fire"></i> Trends</a></li>
+			{% if user.is_authenticated %}
+			<li><a href="#"><i class="fas fa-clock"></i> Watch Later</a></li>
+			<li><a href="#"><i class="fas fa-thumbs-up"></i> Liked</a></li>
+			{% endif %}
+		</ul>
+	</div>
+	<div class="separator"></div>
+	<div class="sidebar-section">
+		<ul>
+			{% for category in categories %}
+			<li><a href="{% url 'videos:category' category.slug %}" class="{% if request.resolver_match.url_name == 'category' and request.resolver_match.kwargs.slug == category.slug %}active{% endif %}"><i class="fas fa-{{ category.icon|default:'tag' }}"></i> {{ category.name }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% if user.is_authenticated %}
+	{% if user.model_profile %}
+	<div class="sidebar-section">
+		<h3>Porn Model</h3>
+		<ul>
+			<li><a href="{% url 'models:detail' user.model_profile.slug %}" class="{% if request.resolver_match.url_name == 'detail' and request.resolver_match.kwargs.slug == user.model_profile.slug %}active{% endif %}"><i class="fas fa-user"></i> My profile</a></li>
+			<li><a href="{% url 'admin:videos_video_add' %}" class="{% if request.resolver_match.url_name == 'videos_video_add' %}active{% endif %}"><i class="fas fa-plus"></i> Add video</a></li>
+			<li><a href="{% url 'admin:models_model_change' user.model_profile.id %}" class="{% if request.resolver_match.url_name == 'models_model_change' and request.resolver_match.kwargs.object_id == user.model_profile.id|stringformat:'s' %}active{% endif %}"><i class="fas fa-edit"></i> Edit Profile</a></li>
+		</ul>
+	</div>
+	{% endif %}
+	<div class="sidebar-section">
+		<h3>Subscriptions</h3>
+		<ul>
+			{% for subscription in user.subscriptions.all|slice:":5" %}
+			<li><a href="{% url 'users:profile' subscription.channel.username %}" class="{% if request.resolver_match.url_name == 'profile' and request.resolver_match.kwargs.username == subscription.channel.username %}active{% endif %}"><i class="fas fa-user-circle"></i> {{ subscription.channel.username }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+	{% ad_banner 'sidebar-banner' request %}
 </aside>
-

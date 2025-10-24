@@ -8,15 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TubeCMS - Видео хостинг{% endblock %}</title>
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/models.css' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -34,15 +30,15 @@
                 
                 <div class="search-bar">
                     <form method="GET" action="{% url 'core:search' %}" hx-get="{% url 'core:search' %}" hx-target="#search-results" hx-trigger="keyup delay:500ms from:input[name='q']">
-                        <input type="text" name="q" placeholder="Поиск видео..." value="{{ request.GET.q }}">
+                        <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q }}">
                         <i class="fas fa-search search-icon"></i>
                     </form>
                 </div>
                 
                 <div class="account-controls">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'videos:upload' %}" title="Загрузить видео">
-                            <i class="fas fa-video"></i> Создать
+                        <a href="{% url 'videos:upload' %}" title="Upload video">
+                            <i class="fas fa-video"></i> Upload
                         </a>
                         <a href="#" title="Уведомления">
                             <i class="fas fa-bell"></i>
@@ -61,10 +57,10 @@
                             <i class="fas fa-moon"></i>
                         </button>
                         <a href="{% url 'users:login' %}" class="btn">
-                            <i class="fas fa-sign-in-alt"></i> Войти
+                            <i class="fas fa-sign-in-alt"></i> Login
                         </a>
                         <a href="{% url 'users:register' %}">
-                            <i class="fas fa-user-plus"></i> Регистрация
+                            <i class="fas fa-user-plus"></i> Register
                         </a>
                     {% endif %}
                 </div>
@@ -75,17 +71,16 @@
         <nav>
             <div class="container nav-container">
                 <div class="left-nav">
-                    <a href="{% url 'core:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Все</a>
-                    {% for category in categories %}
-                        <a href="{% url 'videos:category' category.slug %}" class="nav-item">{{ category.name }}</a>
-                    {% endfor %}
+                    <a href="{% url 'core:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home"></i> Home</a>
+                    <a href="{% url 'core:categories' %}" class="nav-item {% if request.resolver_match.url_name == 'categories' %}active{% endif %}"><i class="fas fa-folder"></i> Categories</a>
+                    <a href="{% url 'models:list' %}" class="nav-item {% if request.resolver_match.url_name == 'list' %}active{% endif %}"><i class="fas fa-users"></i> Pornstars</a></li>
                 </div>
                 
                 <div class="right-nav">
-                    <a href="{% url 'core:search' %}?sort=popular" class="nav-item">Популярное</a>
-                    <a href="{% url 'core:search' %}?sort=trending" class="nav-item">Тренды</a>
+                    <a href="{% url 'core:search' %}?sort=popular" class="nav-item {% if request.resolver_match.url_name == 'search' and request.GET.sort == 'popular' %}active{% endif %}">Popular</a>
+                    <a href="{% url 'core:search' %}?sort=trending" class="nav-item {% if request.resolver_match.url_name == 'search' and request.GET.sort == 'trending' %}active{% endif %}">Trends</a>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'users:subscriptions' %}" class="nav-item">Подписки</a>
+                        <a href="{% url 'users:subscriptions' %}" class="nav-item {% if request.resolver_match.url_name == 'subscriptions' %}active{% endif %}">Subscriptions</a>
                     {% endif %}
                 </div>
             </div>
@@ -97,9 +92,6 @@
         <div class="main-content">
             <!-- Боковая панель -->
             {% include 'partials/sidebar.html' %}
-            
-          
-            
             <!-- Основной контент -->
             <main class="content">
                 {% if messages %}
@@ -175,7 +167,10 @@
             </div>
         </div>
     </footer>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- JavaScript -->
     <script src="{% static 'js/htmx-handlers.js' %}"></script>
     
