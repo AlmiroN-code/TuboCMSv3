@@ -5,7 +5,7 @@
             {% if video.poster %}
                 <img src="{{ video.poster.url }}" alt="{{ video.title }}" class="poster-image" loading="lazy">
             {% else %}
-                <div class="poster-placeholder" style="background: linear-gradient(45deg, #ff0000, #ff8c00); height: 100%;"></div>
+                <div class="poster-placeholder"></div>
             {% endif %}
             
             {% if video.preview %}

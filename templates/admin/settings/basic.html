@@ -1,0 +1,28 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}Основные настройки{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='admin_settings' %}">Настройки</a>
+&rsaquo; Основные настройки
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h1>Основные настройки</h1>
+    <p>Здесь будут основные настройки сайта.</p>
+    
+    <!-- Добавьте здесь форму с основными настройками -->
+    <form method="post">
+        {% csrf_token %}
+        <!-- Поля основных настроек -->
+        <div class="form-row">
+            <input type="submit" value="Сохранить" class="default" name="_save">
+        </div>
+    </form>
+</div>
+{% endblock %}
