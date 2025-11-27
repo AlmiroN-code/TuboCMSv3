@@ -3,5 +3,13 @@
 
 # Additional production-only packages
 psutil==5.9.6
-django-cacheops==7.1.0
 django-health-check==3.17.0
+
+# Redis client for Django cache
+django-redis==5.4.0
+
+# Celery beat scheduler with database backend
+django-celery-beat==2.8.1
+
+# HTTP requests for webhooks
+requests==2.31.0
