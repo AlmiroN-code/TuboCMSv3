@@ -109,7 +109,7 @@ if [ ! -d "$PROJECT_DIR/.git" ]; then
     fi
     
     # Clone the repository
-    git clone https://github.com/AlmiroN-code/TuboCMSv3.git $PROJECT_DIR
+    git clone https://github.com/AlmiroN-code/TuboCMSv2.git $PROJECT_DIR
     
     if [ $? -eq 0 ]; then
         log "Repository cloned successfully"

@@ -2,7 +2,7 @@
 
 # TubeCMS Quick Deployment Script
 # One-command deployment for Ubuntu 24.04
-# Usage: curl -sSL https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv3/main/docs/quick-deploy.sh | sudo bash
+# Usage: curl -sSL https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv2/main/docs/quick-deploy.sh | sudo bash
 
 set -e
 
@@ -44,7 +44,7 @@ TEMP_DIR=$(mktemp -d)
 cd $TEMP_DIR
 
 # Download the main deployment script
-wget -q https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv3/main/deploy/deploy.sh -O deploy.sh
+wget -q https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv2/main/deploy/deploy.sh -O deploy.sh
 
 if [ ! -f "deploy.sh" ]; then
     error "Failed to download deployment script"
