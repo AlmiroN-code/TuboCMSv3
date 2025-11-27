@@ -136,6 +136,9 @@ class VideoProcessingService:
                 video.save(update_fields=["processing_status", "processing_error"])
                 return False
 
+            # Generate HLS/DASH streams if enabled
+            VideoProcessingService._generate_streams(video, video_path, profiles, pipeline)
+
             # Save results to database
             return VideoProcessingService._save_results(video, result, settings_obj)
 
@@ -256,6 +259,85 @@ class VideoProcessingService:
         except Exception as e:
             logger.exception(f"Error saving results for video {video.id}")
             return False
+
+    @staticmethod
+    def _generate_streams(video, video_path, profiles, pipeline):
+        """Generate HLS and DASH streams if enabled in settings."""
+        from django.conf import settings as django_settings
+        from .models import VideoStream
+        
+        video_settings = getattr(django_settings, 'VIDEO_PROCESSING', {})
+        generate_hls = video_settings.get('GENERATE_HLS', False)
+        generate_dash = video_settings.get('GENERATE_DASH', False)
+        
+        if not generate_hls and not generate_dash:
+            return
+        
+        video_id = video.id
+        
+        try:
+            # Get video duration
+            video_info = FFmpegWrapper.get_video_info(video_path)
+            duration = video_info.get('duration', 0)
+            
+            # Generate HLS streams
+            if generate_hls:
+                logger.info(f"[STREAMS] Generating HLS for video {video_id}")
+                hls_results = pipeline.generate_hls_streams(
+                    video_id, video_path, profiles
+                )
+                
+                for result in hls_results:
+                    if result.get('success'):
+                        # Save to VideoStream model
+                        profile = next(
+                            (p for p in profiles if p.name == result.get('profile')),
+                            None
+                        )
+                        if profile:
+                            VideoStream.objects.update_or_create(
+                                video=video,
+                                stream_type='hls',
+                                profile=profile,
+                                defaults={
+                                    'manifest_path': result.get('playlist_path', ''),
+                                    'segment_count': result.get('segment_count', 0),
+                                    'total_size': result.get('total_size', 0),
+                                    'is_ready': True,
+                                }
+                            )
+                logger.info(f"[STREAMS] HLS generation completed for video {video_id}")
+            
+            # Generate DASH streams
+            if generate_dash:
+                logger.info(f"[STREAMS] Generating DASH for video {video_id}")
+                dash_results = pipeline.generate_dash_streams(
+                    video_id, video_path, profiles, duration
+                )
+                
+                for result in dash_results:
+                    if result.get('success'):
+                        profile = next(
+                            (p for p in profiles if p.name == result.get('profile')),
+                            None
+                        )
+                        if profile:
+                            VideoStream.objects.update_or_create(
+                                video=video,
+                                stream_type='dash',
+                                profile=profile,
+                                defaults={
+                                    'manifest_path': result.get('mpd_path', ''),
+                                    'segment_count': result.get('segment_count', 0),
+                                    'total_size': result.get('total_size', 0),
+                                    'is_ready': True,
+                                }
+                            )
+                logger.info(f"[STREAMS] DASH generation completed for video {video_id}")
+                
+        except Exception as e:
+            logger.warning(f"[STREAMS] Stream generation failed for video {video_id}: {e}")
+            # Don't fail the whole process if streaming fails
 
     @staticmethod
     def _cleanup_temp_file(video):
