@@ -35,6 +35,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "django_extensions",
     "rosetta",
+    "django_celery_beat",
 ]
 
 LOCAL_APPS = [
