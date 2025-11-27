@@ -44,7 +44,7 @@ TEMP_DIR=$(mktemp -d)
 cd $TEMP_DIR
 
 # Download the main deployment script
-wget -q https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv2/main/deploy/deploy.sh -O deploy.sh
+wget -q https://raw.githubusercontent.com/AlmiroN-code/TuboCMSv3/main/deploy/deploy.sh -O deploy.sh
 
 if [ ! -f "deploy.sh" ]; then
     error "Failed to download deployment script"
