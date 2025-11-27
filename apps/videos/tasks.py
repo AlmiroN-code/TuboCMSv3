@@ -252,22 +252,48 @@ def compress_video(video_id):
 
 @shared_task
 def process_pending_videos(limit: int = 20):
-    """Подбирает видео в статусе 'pending' с наличием входного файла и ставит их в очередь.
-
-    limit ограничивает количество видео за один прогон, чтобы не перегружать очередь.
     """
+    Подбирает видео для обработки и ставит их в очередь.
+    
+    Обрабатывает:
+    1. Видео в статусе 'pending' с файлом
+    2. "Застрявшие" видео в статусе 'processing' более 2 часов
+    
+    Запускается каждую минуту через Celery Beat.
+    """
+    import logging
+    from datetime import timedelta
     from django.db.models import Q
-
+    from django.utils import timezone
+    
+    logger = logging.getLogger(__name__)
+    
+    started = 0
+    skipped = 0
+    reset = 0
+    
+    # 1. Сбрасываем "застрявшие" видео (processing > 2 часов)
+    stuck_cutoff = timezone.now() - timedelta(hours=2)
+    stuck_videos = Video.objects.filter(
+        processing_status="processing",
+        updated_at__lt=stuck_cutoff
+    )
+    for video in stuck_videos:
+        video.processing_status = "pending"
+        video.processing_error = "Reset: stuck in processing for >2 hours"
+        video.save(update_fields=["processing_status", "processing_error", "updated_at"])
+        reset += 1
+        logger.warning(f"Reset stuck video {video.id}")
+    
+    # 2. Находим видео для обработки
     candidates = (
         Video.objects.filter(processing_status="pending")
         .exclude(Q(temp_video_file__isnull=True) | Q(temp_video_file=""))
         .order_by("created_at")[:limit]
     )
 
-    started = 0
-    skipped = 0
-
     for video in candidates:
+        # Проверяем существование файла
         file_exists = False
         try:
             if video.temp_video_file:
@@ -276,7 +302,8 @@ def process_pending_videos(limit: int = 20):
                 )
         except Exception:
             try:
-                file_exists = bool(getattr(video.temp_video_file, "path", None))
+                import os
+                file_exists = os.path.exists(video.temp_video_file.path)
             except Exception:
                 file_exists = False
 
@@ -284,23 +311,27 @@ def process_pending_videos(limit: int = 20):
             skipped += 1
             continue
 
-        if video.processing_status in ["processing", "completed"]:
-            skipped += 1
-            continue
+        # Ставим статус processing
+        Video.objects.filter(pk=video.pk).update(
+            processing_status="processing",
+            updated_at=timezone.now()
+        )
 
-        video.processing_status = "processing"
-        video.save(update_fields=["processing_status"])
-
+        # Запускаем задачу
         try:
             process_video_async.delay(video.id, None)
             started += 1
+            logger.info(f"Started processing video {video.id}")
         except Exception as e:
-            video.processing_status = "pending"
-            video.processing_error = f"Enqueue error: {e}"
-            video.save(update_fields=["processing_status", "processing_error"])
+            Video.objects.filter(pk=video.pk).update(
+                processing_status="pending",
+                processing_error=f"Enqueue error: {e}"
+            )
             skipped += 1
+            logger.error(f"Failed to enqueue video {video.id}: {e}")
 
-    print(f"process_pending_videos: started={started}, skipped={skipped}")
+    if started > 0 or reset > 0:
+        logger.info(f"process_pending_videos: started={started}, skipped={skipped}, reset={reset}")
 
 
 @shared_task

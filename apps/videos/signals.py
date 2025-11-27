@@ -1,14 +1,17 @@
 """
 Signals for video model.
+Надёжный запуск обработки видео после сохранения.
 """
-from django.conf import settings
+import logging
+
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
 from .models import Video
-from .tasks import cleanup_old_videos, process_video_async
 
-# Сохраняем старое значение файла перед сохранением
+logger = logging.getLogger(__name__)
+
+# Храним старое значение файла перед сохранением
 _old_temp_video_file = {}
 
 
@@ -18,168 +21,157 @@ def video_pre_save(sender, instance, **kwargs):
     if instance.pk:
         try:
             old_instance = sender.objects.get(pk=instance.pk)
-            old_file = (
+            _old_temp_video_file[instance.pk] = (
                 old_instance.temp_video_file.name
                 if old_instance.temp_video_file
                 else None
             )
-            _old_temp_video_file[instance.pk] = old_file
-            print(
-                f"[SIGNAL PRE_SAVE] Video {instance.pk}: old_file={old_file}, new_file={instance.temp_video_file.name if instance.temp_video_file else None}"
-            )
         except sender.DoesNotExist:
             _old_temp_video_file[instance.pk] = None
-            print(f"[SIGNAL PRE_SAVE] Video {instance.pk}: new object (no old file)")
     else:
-        # Для нового объекта используем временный ID
-        temp_id = id(instance)
-        new_file = instance.temp_video_file.name if instance.temp_video_file else None
-        _old_temp_video_file[temp_id] = None
-        instance._temp_signal_id = temp_id
-        print(
-            f"[SIGNAL PRE_SAVE] New video (temp_id={temp_id}): no old file, new_file={new_file}"
-        )
+        # Новый объект - используем временный ID
+        instance._temp_signal_id = id(instance)
+        _old_temp_video_file[instance._temp_signal_id] = None
 
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
-    """Handle video post-save events - запускать обработку всегда, если есть temp_video_file и он изменился."""
-    # Получаем старое значение файла из сохраненного перед save
-    old_file = None
+    """
+    Запуск обработки видео после сохранения.
+    Видео сохраняется СРАЗУ, обработка идёт в фоне.
+    """
+    # Получаем старое значение файла
     if instance.pk:
         old_file = _old_temp_video_file.pop(instance.pk, None)
     elif hasattr(instance, "_temp_signal_id"):
-        temp_id = instance._temp_signal_id
-        old_file = _old_temp_video_file.pop(temp_id, None)
+        old_file = _old_temp_video_file.pop(instance._temp_signal_id, None)
+    else:
+        old_file = None
 
-    # Получаем новое значение файла
+    # Новое значение файла
     new_file = instance.temp_video_file.name if instance.temp_video_file else None
 
-    # Проверяем, существует ли файл физически
+    # Проверяем существование файла
     file_exists = False
     if instance.temp_video_file:
         try:
             file_exists = instance.temp_video_file.storage.exists(
                 instance.temp_video_file.name
             )
-        except:
+        except Exception:
             try:
                 import os
-
                 file_exists = os.path.exists(instance.temp_video_file.path)
-            except:
+            except Exception:
                 file_exists = False
 
-    print(
-        f"[SIGNAL POST_SAVE] Video {instance.id}: created={created}, old_file={old_file}, new_file={new_file}, file_exists={file_exists}, processing_status={instance.processing_status}"
-    )
-
-    # Запускать обработку, если:
-    # 1. Видео создано и есть файл, который существует физически
-    # 2. Файл появился (было None, стало есть) и файл существует
-    # 3. Файл изменился (старый файл != новый файл) и новый файл существует
-    # 4. Файл существует, но обработка еще не запускалась (processing_status = 'pending')
+    # Определяем нужно ли запускать обработку
     should_process = False
-    if created and new_file and file_exists:
+    
+    # Условия для запуска обработки:
+    if instance.processing_status in ["processing", "completed"]:
+        # Уже обрабатывается или завершено - пропускаем
+        pass
+    elif created and new_file and file_exists:
+        # Новое видео с файлом
         should_process = True
-        print(f"[SIGNAL] [OK] NEW video {instance.id} with file: {new_file}")
-    elif new_file and file_exists and (not old_file or old_file != new_file):
+        logger.info(f"[SIGNAL] New video {instance.id} with file, starting processing")
+    elif new_file and file_exists and old_file != new_file:
+        # Файл изменился
         should_process = True
-        print(
-            f"[SIGNAL] [OK] Video {instance.id} file changed: {old_file} -> {new_file}"
-        )
+        logger.info(f"[SIGNAL] Video {instance.id} file changed, starting processing")
     elif new_file and file_exists and instance.processing_status == "pending":
-        # Если файл есть, но обработка еще не запускалась
+        # Файл есть, но обработка не начиналась
         should_process = True
-        print(
-            f"[SIGNAL] [OK] Video {instance.id} has file but processing not started yet: {new_file}"
-        )
-    else:
-        print(
-            f"[SIGNAL] [SKIP] Skipping processing for video {instance.id}: created={created}, old_file={old_file}, new_file={new_file}, file_exists={file_exists}, processing_status={instance.processing_status}"
-        )
+        logger.info(f"[SIGNAL] Video {instance.id} pending with file, starting processing")
 
     if should_process:
-        # Проверяем, не обрабатывается ли уже видео
-        if instance.processing_status in ["processing", "completed"]:
-            print(
-                f"(Signal) [SKIP] Video {instance.id} is already processing or completed. Status: {instance.processing_status}"
-            )
-            return
+        # Запускаем обработку НАДЁЖНО
+        _start_video_processing(instance)
 
-        selected_profiles = getattr(instance, "_selected_encoding_profiles", None)
-        print(
-            f"[SIGNAL] [START] Starting async processing for video {instance.id} (created={created}, profiles={selected_profiles})"
-        )
+    # Обновляем счётчик видео пользователя
+    if created and instance.created_by:
+        try:
+            instance.created_by.videos_count += 1
+            instance.created_by.save(update_fields=["videos_count"])
+        except Exception as e:
+            logger.warning(f"Failed to update video count: {e}")
 
-        # Устанавливаем статус processing БЕЗ вызова сигналов
-        Video.objects.filter(pk=instance.pk).update(processing_status="processing")
-        instance.processing_status = "processing"  # Обновляем локальный объект
-        print(f"[SIGNAL] [STATUS] Video {instance.id} status set to 'processing'")
 
-        # Запускаем обработку в фоновом потоке, чтобы не блокировать сохранение
-        # Это работает как с Celery eager режимом, так и с реальным Celery worker
+def _start_video_processing(video):
+    """
+    Надёжный запуск обработки видео.
+    Пробует несколько способов, гарантирует что задача будет поставлена в очередь.
+    """
+    video_id = video.id
+    selected_profiles = getattr(video, "_selected_encoding_profiles", None)
+    
+    # Устанавливаем статус processing
+    Video.objects.filter(pk=video_id).update(processing_status="processing")
+    
+    # Способ 1: Простой delay() - самый надёжный
+    try:
+        from .tasks import process_video_async
+        process_video_async.delay(video_id, selected_profiles)
+        logger.info(f"[SIGNAL] Task queued for video {video_id} via delay()")
+        return
+    except Exception as e:
+        logger.warning(f"[SIGNAL] delay() failed for video {video_id}: {e}")
+    
+    # Способ 2: apply_async без приоритетов
+    try:
+        from .tasks import process_video_async
+        process_video_async.apply_async(args=[video_id, selected_profiles])
+        logger.info(f"[SIGNAL] Task queued for video {video_id} via apply_async()")
+        return
+    except Exception as e:
+        logger.warning(f"[SIGNAL] apply_async() failed for video {video_id}: {e}")
+    
+    # Способ 3: Отложенный запуск через threading (fallback)
+    try:
         import threading
         
-        def run_processing():
-            """Запуск обработки в отдельном потоке."""
+        def delayed_task():
+            import time
             import django
-            django.db.connections.close_all()  # Закрываем соединения для нового потока
-            
+            time.sleep(1)  # Небольшая задержка
+            django.db.connections.close_all()
             try:
-                from apps.videos.tasks import process_video_async
-                from apps.videos.priority_utils import PriorityManager
-                
-                # Определяем приоритет на основе пользователя и видео
-                priority = PriorityManager.get_priority_for_video(instance)
-                priority_label = PriorityManager.get_priority_label(priority)
-                
-                if instance.created_by:
-                    print(f"[SIGNAL] [PRIORITY] User {instance.created_by.username} (premium={instance.created_by.is_premium}): priority={priority} ({priority_label})")
-                else:
-                    print(f"[SIGNAL] [PRIORITY] No user: priority={priority} ({priority_label})")
-                
-                # Запускаем задачу с приоритетом
-                result = process_video_async.apply_async(
-                    args=[instance.id, selected_profiles],
-                    priority=priority,
-                    queue='video_processing'
-                )
-                print(
-                    f"[SIGNAL] [SUCCESS] Processing task queued for video {instance.id} with priority {priority} ({priority_label})"
-                )
-            except Exception as e:
-                import logging
-                logger = logging.getLogger(__name__)
-                logger.error(f"Failed to process video {instance.id}: {e}")
-                # Устанавливаем статус в 'pending' для ручной обработки позже
-                try:
-                    Video.objects.filter(pk=instance.pk).update(processing_status="pending")
-                except:
-                    pass
+                from .tasks import process_video_async
+                process_video_async.delay(video_id, selected_profiles)
+                logger.info(f"[SIGNAL] Task queued for video {video_id} via thread")
+            except Exception as ex:
+                logger.error(f"[SIGNAL] Thread task failed for video {video_id}: {ex}")
+                # Устанавливаем pending для повторной попытки через beat
+                Video.objects.filter(pk=video_id).update(processing_status="pending")
         
-        # Запускаем в фоновом потоке
-        thread = threading.Thread(target=run_processing, daemon=True)
+        thread = threading.Thread(target=delayed_task, daemon=True)
         thread.start()
-        print(f"[SIGNAL] [ASYNC] Background processing started for video {instance.id}")
-
-    # Обновление счётчика видео
-    if created and instance.created_by:
-        instance.created_by.videos_count += 1
-        instance.created_by.save(update_fields=["videos_count"])
-
-    # Slug is handled in the model's save method
+        logger.info(f"[SIGNAL] Started background thread for video {video_id}")
+        return
+    except Exception as e:
+        logger.error(f"[SIGNAL] All methods failed for video {video_id}: {e}")
+    
+    # Если всё упало - ставим pending, Celery Beat подхватит через process_pending_videos
+    Video.objects.filter(pk=video_id).update(processing_status="pending")
+    logger.warning(f"[SIGNAL] Video {video_id} set to pending for later processing")
 
 
 @receiver(pre_delete, sender=Video)
 def video_pre_delete(sender, instance, **kwargs):
-    """Handle video pre-delete events."""
-    # Update user's video count
+    """Удаление файлов при удалении видео."""
+    import os
+    from django.conf import settings
+    
+    # Обновляем счётчик видео
     if instance.created_by and instance.created_by.videos_count > 0:
-        instance.created_by.videos_count -= 1
-        instance.created_by.save(update_fields=["videos_count"])
+        try:
+            instance.created_by.videos_count -= 1
+            instance.created_by.save(update_fields=["videos_count"])
+        except Exception:
+            pass
 
-    # Delete associated files
+    # Удаляем файлы
     try:
         if instance.temp_video_file:
             instance.temp_video_file.delete(save=False)
@@ -187,33 +179,15 @@ def video_pre_delete(sender, instance, **kwargs):
             instance.preview.delete(save=False)
         if instance.poster:
             instance.poster.delete(save=False)
-        # Delete converted files
+        
+        # Удаляем сконвертированные файлы
         if instance.converted_files:
-            import os
-
-            from django.conf import settings
-
             for file_path in instance.converted_files:
                 full_path = os.path.join(settings.MEDIA_ROOT, file_path)
                 try:
                     if os.path.exists(full_path):
                         os.remove(full_path)
-                except Exception as e:
-                    print(f"Error deleting converted file {full_path}: {e}")
+                except Exception:
+                    pass
     except Exception as e:
-        import logging
-
-        logger = logging.getLogger(__name__)
-        logger.error(
-            f"Error deleting video files for video {instance.id}: {e}", exc_info=True
-        )
-
-
-# Periodic tasks
-from celery import shared_task
-
-
-@shared_task
-def periodic_cleanup():
-    """Periodic cleanup task."""
-    cleanup_old_videos.delay()
+        logger.error(f"Error deleting files for video {instance.id}: {e}")
