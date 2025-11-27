@@ -29,7 +29,7 @@
             <h1>{{ playlist.title }}</h1>
             
             <div class="playlist-author-large">
-                <a href="{% url 'users:profile' username=playlist.user.username %}">
+                <a href="{% url 'members:profile' username=playlist.user.username %}">
                     {% if playlist.user.avatar %}
                         <img src="{{ playlist.user.avatar.url }}" alt="{{ playlist.user.username }}" class="author-avatar">
                     {% else %}

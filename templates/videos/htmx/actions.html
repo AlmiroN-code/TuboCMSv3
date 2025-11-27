@@ -52,7 +52,7 @@
         </button>
     {% endif %}
     
-    <button class="action-btn share-btn">
+    <button class="action-btn share-btn" onclick="shareVideo('{{ video.title|escapejs }}', '{% url 'videos:detail' video.slug %}')" title="Share video">
         <i class="fas fa-share"></i>
         <span>Share</span>
     </button>

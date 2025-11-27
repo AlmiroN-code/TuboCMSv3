@@ -744,3 +744,53 @@ function changeLanguage(langCode) {
     document.body.appendChild(form);
     form.submit();
 }
+
+// Sha
+re video functionality
+function shareVideo(title, url) {
+    const fullUrl = window.location.origin + url;
+    
+    // Check if Web Share API is available
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            url: fullUrl
+        }).catch(err => {
+            // User cancelled or error - fallback to copy
+            copyToClipboard(fullUrl);
+        });
+    } else {
+        // Fallback: copy to clipboard
+        copyToClipboard(fullUrl);
+    }
+}
+
+// Copy to clipboard helper
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Link copied to clipboard!', 'success');
+        }).catch(() => {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+// Fallback for older browsers
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showNotification('Link copied to clipboard!', 'success');
+    } catch (err) {
+        showNotification('Failed to copy link', 'error');
+    }
+    document.body.removeChild(textArea);
+}

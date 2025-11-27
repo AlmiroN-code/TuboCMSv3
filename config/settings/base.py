@@ -163,19 +163,28 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
+    # Video processing - every minute
     "videos_process_pending": {
         "task": "apps.videos.tasks.process_pending_videos",
-        "schedule": 60.0,  # каждый 1 мин
+        "schedule": 60.0,
         "args": (),
     },
+    # Cleanup old drafts - daily at 03:00
     "videos_cleanup_old": {
         "task": "apps.videos.tasks.cleanup_old_videos",
-        "schedule": crontab(minute=0, hour=3),  # ежедневно в 03:00
+        "schedule": crontab(minute=0, hour=3),
         "args": (),
     },
+    # Alert system - every 5 minutes
     "check_alert_rules": {
         "task": "apps.videos.tasks.check_alert_rules",
-        "schedule": 300.0,  # каждые 5 минут
+        "schedule": 300.0,
+        "args": (),
+    },
+    # Update video statistics - every hour
+    "update_video_statistics": {
+        "task": "apps.videos.tasks.update_video_statistics",
+        "schedule": crontab(minute=0),
         "args": (),
     },
 }

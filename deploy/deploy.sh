@@ -104,33 +104,22 @@ sudo -u $PROJECT_USER ./venv/bin/python manage.py collectstatic --noinput --sett
 # Set DB permissions
 [ -f "$PROJECT_DIR/db.sqlite3" ] && chown $PROJECT_USER:www-data $PROJECT_DIR/db.sqlite3 && chmod 664 $PROJECT_DIR/db.sqlite3
 
-# 10. Create encoding profiles and alert rules
-log "Creating encoding profiles and alert rules..."
+# 10. Setup encoding profiles and alert rules using management commands
+log "Setting up encoding profiles..."
+sudo -u $PROJECT_USER ./venv/bin/python manage.py setup_encoding --settings=config.settings.production || warn "setup_encoding failed"
+
+log "Creating default alert rules..."
+sudo -u $PROJECT_USER ./venv/bin/python manage.py create_default_alerts --settings=config.settings.production || warn "create_default_alerts failed"
+
+# Create additional encoding profiles (480p)
+log "Creating additional encoding profiles..."
 sudo -u $PROJECT_USER ./venv/bin/python manage.py shell --settings=config.settings.production << 'PYEOF'
-from apps.videos.models_encoding import VideoEncodingProfile, MetadataExtractionSettings
-from apps.videos.models_alerts import AlertRule
-
-for p in [
-    {"name": "360p", "resolution": "360p", "width": 640, "height": 360, "bitrate": 800, "order": 1},
-    {"name": "480p", "resolution": "480p", "width": 854, "height": 480, "bitrate": 1200, "order": 2},
-    {"name": "720p", "resolution": "720p", "width": 1280, "height": 720, "bitrate": 2500, "order": 3},
-    {"name": "1080p", "resolution": "1080p", "width": 1920, "height": 1080, "bitrate": 5000, "order": 4},
-]:
-    VideoEncodingProfile.objects.get_or_create(name=p["name"], defaults=p)
-
-MetadataExtractionSettings.objects.get_or_create(is_active=True, defaults={
-    "poster_width": 640, "poster_height": 360, "poster_format": "JPEG", "poster_quality": 85,
-    "preview_width": 640, "preview_height": 360, "preview_duration": 12, "preview_segment_duration": 2,
-})
-
-for r in [
-    {"name": "High Queue", "alert_type": "queue_size", "threshold_value": 50, "severity": "warning", "cooldown_minutes": 15},
-    {"name": "High Errors", "alert_type": "error_rate", "threshold_value": 10, "severity": "critical", "cooldown_minutes": 30},
-    {"name": "FFmpeg Down", "alert_type": "ffmpeg_unavailable", "threshold_value": 0, "severity": "critical", "cooldown_minutes": 5},
-    {"name": "Low Disk", "alert_type": "disk_space", "threshold_value": 90, "severity": "critical", "cooldown_minutes": 60},
-]:
-    AlertRule.objects.get_or_create(name=r["name"], defaults=r)
-print("Setup complete")
+from apps.videos.models_encoding import VideoEncodingProfile
+VideoEncodingProfile.objects.get_or_create(
+    name="480p",
+    defaults={"resolution": "480p", "width": 854, "height": 480, "bitrate": 1200, "order": 2, "is_active": True}
+)
+print("480p profile created/verified")
 PYEOF
 
 # 11. Remove old socket config if exists

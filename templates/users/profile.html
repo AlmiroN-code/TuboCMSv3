@@ -24,7 +24,7 @@
             <div class="profile-stats">
                 <div class="stat-item">
                     <span class="stat-number">{{ profile_user.videos_count }}</span>
-                    <span class="stat-label">{% trans 'Views' %}</span>
+                    <span class="stat-label">{% trans 'Videos' %}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">{{ profile_user.subscribers_count }}</span>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">{{ profile_user.total_views|format_views }}</span>
-                    <span class="stat-label">{% trans 'Videos' %}</span>
+                    <span class="stat-label">{% trans 'Views' %}</span>
                 </div>
             </div>
             {% if profile_user.bio %}
@@ -57,9 +57,9 @@
                         {% if is_subscribed %}{% trans 'Unsubscribe' %}{% else %}{% trans 'Subscribe' %}{% endif %}
                     </button>
 
-                    <button class="btn btn--secondary edit-btn">
+                    <a href="{% url 'members:edit_profile' username=profile_user.username %}" class="btn btn--secondary edit-btn">
                         {% trans 'Edit' %}
-                    </button>
+                    </a>
 
                     <!-- Friend Request Button -->
                     <div id="friend-btn-{{ profile_user.id }}" class="friend-button-container btn">
@@ -111,9 +111,9 @@
                     <a href="{% url 'members:edit_profile' username=user.username %}" class="btn btn--secondary">
                         {% trans 'Edit Profile' %}
                     </a>
-                    <button class="btn btn--primary">
+                    <a href="{% url 'videos:playlist_create' %}" class="btn btn--primary">
                         {% trans 'Create playlist' %}
-                    </button>
+                    </a>
                 {% endif %}
             </div>
         </div>

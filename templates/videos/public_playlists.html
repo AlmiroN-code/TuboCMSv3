@@ -71,7 +71,7 @@
                         </h3>
                         
                         <div class="playlist-author">
-                            <a href="{% url 'users:profile' username=playlist.user.username %}">
+                            <a href="{% url 'members:profile' username=playlist.user.username %}">
                                 <i class="fas fa-user"></i> {{ playlist.user.username }}
                             </a>
                         </div>

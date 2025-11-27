@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load custom_i18n %}
 <!DOCTYPE html>
-<html lang="{% current_language %}"
+<html lang="{% current_language %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,12 @@
         <meta name="twitter:card" content="{{ seo_settings.twitter_card|default:'summary_large_image' }}">{% if seo_settings.twitter_site %}<meta name="twitter:site" content="{{ seo_settings.twitter_site }}">{% endif %}{% if seo_settings.twitter_creator %}<meta name="twitter:creator" content="{{ seo_settings.twitter_creator }}">{% endif %}{% endif %}
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <meta name="csrf-token" content="{{ csrf_token }}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/quantum.css' %}">
 
@@ -70,11 +76,11 @@
                         <div class="notifications-container">
                             <button class="notifications-btn" title="{% trans 'Notifications' %}" hx-get="{% url 'users:notifications_dropdown' %}" hx-target="#notifications-dropdown" hx-swap="innerHTML" hx-trigger="click" onclick="toggleNotifications(event)">
                                 <i class="fas fa-bell"></i>
-                                <div id="notifications-count" hx-get="{% url 'users:notifications_count' %}" hx-trigger="load, every 30s" x-swap="innerHTML"></div>
+                                <div id="notifications-count" hx-get="{% url 'users:notifications_count' %}" hx-trigger="load, every 30s" hx-swap="innerHTML"></div>
                             </button>
                             <div id="notifications-dropdown" class="notifications-dropdown-container"></div>
                         </div>
-                        <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}"><i class="fas fa-moon"></i></button>
+                        <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}" aria-label="{% trans 'Toggle theme' %}"><i class="fas fa-moon" aria-hidden="true"></i></button>
                         <div class="account-dropdown">
                             <a href="{% url 'members:profile' username=user.username %}" class="user-avatar" title="{% trans_custom 'Profile' %}">
                                 {% if user.avatar %}
@@ -116,7 +122,7 @@
                             </button>
                         </div>
                     </div>
-                    <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}"><i class="fas fa-moon"></i></button>
+                    <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}" aria-label="{% trans 'Toggle theme' %}"><i class="fas fa-moon" aria-hidden="true"></i></button>
                 <div class="btn-group">
                     <a href="{% url 'users:login' %}" class="btn btn--primary"><i class="fas fa-sign-in-alt"></i> {% trans 'Login' %}</a>
                     <a href="{% url 'users:register' %}" class="btn btn-dark btn--sm"><i class="fas fa-user-plus"></i> {% trans 'Register' %}</a>
@@ -144,7 +150,7 @@
     <div class="container"><div class="main-content">{% include 'partials/sidebar.html' %}<main class="content">{% if messages %}<div class="messages">{% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% block content %}{% endblock %}</main></div></div>
 
     <!-- Modal container for HTMX modals -->
-    <div id="modal-container"></div>
+    <div id="modal-container" class="modal-overlay"></div>
     <div class="footer-ads"><div class="container">{% ad_banner 'footer-banner' request %}</div></div>
     <footer>
         <div class="container">
@@ -181,10 +187,6 @@
             <div class="footer-bottom"><p>&copy; 2025 {% get_site_setting 'site_name' %}. {% trans 'All rights reserved.' %}</p></div>
         </div>
     </footer>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- JavaScript -->
     <script src="{% static 'js/htmx-handlers.js' %}"></script>
     <script>
@@ -336,7 +338,5 @@
     });
     </script>
 
-    <!-- Modal Container -->
-    <div id="modal-container" class="modal-overlay"></div>
 </body>
 </html>

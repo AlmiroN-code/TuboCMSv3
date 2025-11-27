@@ -52,7 +52,7 @@
                 </div>
             {% endif %}
             {% for user in users %}
-                <a href="{% url 'users:profile' username=user.username %}" class="search-result-item user-item">
+                <a href="{% url 'members:profile' username=user.username %}" class="search-result-item user-item">
                     <div class="search-result-avatar">
                         {% if user.avatar %}
                             <img src="{{ user.avatar.url }}" alt="{{ user.username }}" loading="lazy">
@@ -89,7 +89,7 @@
                 </div>
             {% endif %}
             {% for category in categories %}
-                <a href="{% url 'videos:category' slug=category.slug %}" class="search-result-item category-item">
+                <a href="{% url 'category:videos' category.slug %}" class="search-result-item category-item">
                     <div class="search-result-icon">
                         {% if category.icon %}
                             <i class="{{ category.icon }}"></i>
