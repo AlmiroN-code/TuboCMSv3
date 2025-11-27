@@ -1,0 +1,984 @@
+WARNING 2025-11-27 19:31:53,418 log 7034 132507391926400 Not Found: /.env
+WARNING 2025-11-27 19:31:53,444 log 7035 132507391926400 Not Found: /.git/config
+ERROR 2025-11-27 19:31:53,442 log 7036 132507391926400 Internal Server Error: /
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/views.py", line 26, in home
+    cached_data = cache.get(cache_key)
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:32:10,092 log 7036 132507391926400 Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/base.py", line 169, in render
+    with context.bind_template(self):
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/context.py", line 259, in bind_template
+    context = processor(self.request)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/context_processors.py", line 29, in categories
+    return {"categories": CacheService.get_categories_cached()}
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 57, in get_categories_cached
+    return cls.get_or_set("categories_active", _get_categories, cls.LONG_TIMEOUT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 21, in get_or_set
+    data = cache.get(key)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:32:12,378 log 7035 132507391926400 Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/base.py", line 169, in render
+    with context.bind_template(self):
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/template/context.py", line 259, in bind_template
+    context = processor(self.request)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/context_processors.py", line 29, in categories
+    return {"categories": CacheService.get_categories_cached()}
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 57, in get_categories_cached
+    return cls.get_or_set("categories_active", _get_categories, cls.LONG_TIMEOUT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 21, in get_or_set
+    data = cache.get(key)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:32:16,407 log 7034 132507391926400 Internal Server Error: /
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/views.py", line 26, in home
+    cached_data = cache.get(cache_key)
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:36:17,774 log 7035 132507391926400 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:38:00,558 log 7034 132507391926400 Internal Server Error: /robots.txt
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/views.py", line 157, in robots_txt
+    seo_settings = get_seo_settings()
+                   ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/utils.py", line 70, in get_seo_settings
+    return CacheService.get_seo_settings_cached()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 87, in get_seo_settings_cached
+    return cls.get_or_set("seo_settings_active", _get_seo, cls.VERY_LONG_TIMEOUT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 21, in get_or_set
+    data = cache.get(key)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:38:01,233 log 7036 132507391926400 Internal Server Error: /robots.txt
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1079, in get_connection
+    connection = self._available_connections.pop()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/views.py", line 157, in robots_txt
+    seo_settings = get_seo_settings()
+                   ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/utils.py", line 70, in get_seo_settings
+    return CacheService.get_seo_settings_cached()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 87, in get_seo_settings_cached
+    return cls.get_or_set("seo_settings_active", _get_seo, cls.VERY_LONG_TIMEOUT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/apps/core/services.py", line 21, in get_or_set
+    data = cache.get(key)
+           ^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 188, in get
+    return self._cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/cache/backends/redis.py", line 100, in get
+    value = client.get(key)
+            ^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1081, in get_connection
+    connection = self.make_connection()
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 1121, in make_connection
+    return self.connection_class(**self.connection_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/redis/connection.py", line 581, in __init__
+    super().__init__(**kwargs)
+TypeError: AbstractConnection.__init__() got an unexpected keyword argument 'CLIENT_CLASS'
+ERROR 2025-11-27 19:40:58,341 log 7330 129529585643648 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:41:27,517 log 7330 129529585643648 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+WARNING 2025-11-27 19:42:49,612 middleware 7376 140474265743488 Slow request: POST /users/login/ took 1.12s
+ERROR 2025-11-27 19:43:36,670 log 7377 140474265743488 Invalid HTTP_HOST header: 'www.watch-porn.online'. You may need to add 'www.watch-porn.online' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'www.watch-porn.online'. You may need to add 'www.watch-porn.online' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:43:38,447 log 7377 140474265743488 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+INFO 2025-11-27 19:43:56,695 tasks 6598 137938292617344 Starting video processing for video 87
+INFO 2025-11-27 19:43:56,711 processing_pipeline 6598 137938292617344 [PIPELINE] Video 87: 5% - Validating...
+INFO 2025-11-27 19:43:56,712 ffmpeg_wrapper 6598 137938292617344 [VERSION_CHECK] Starting: ffmpeg -version...
+INFO 2025-11-27 19:43:56,841 ffmpeg_wrapper 6598 137938292617344 [VERSION_CHECK] Success in 0.13s
+INFO 2025-11-27 19:43:56,845 processing_pipeline 6598 137938292617344 [PIPELINE] Video 87: 10% - Analyzing source video...
+INFO 2025-11-27 19:43:56,846 ffmpeg_wrapper 6598 137938292617344 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 19:43:57,135 ffmpeg_wrapper 6598 137938292617344 [PROBE] Success in 0.29s
+INFO 2025-11-27 19:43:57,138 processing_pipeline 6598 137938292617344 [PIPELINE] Video 87: 15% - Extracting poster...
+INFO 2025-11-27 19:43:57,139 ffmpeg_wrapper 6598 137938292617344 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 19:43:57,347 ffmpeg_wrapper 6598 137938292617344 [PROBE] Success in 0.21s
+INFO 2025-11-27 19:43:57,347 ffmpeg_wrapper 6598 137938292617344 [POSTER] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:04:47 -vframes 1 -vf scale=250:150 -f image2 -q:v 10 -y /var/www/rextube.online/media/posters/pos...
+INFO 2025-11-27 19:44:09,602 ffmpeg_wrapper 6598 137938292617344 [POSTER] Success in 12.25s
+INFO 2025-11-27 19:44:09,603 poster_service 6598 137938292617344 [POSTER] Created: /var/www/rextube.online/media/posters/poster_87.jpeg (1946 bytes)
+INFO 2025-11-27 19:44:09,605 processing_pipeline 6598 137938292617344 [PIPELINE] Video 87: 25% - Generating preview...
+INFO 2025-11-27 19:44:09,606 ffmpeg_wrapper 6598 137938292617344 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 19:44:09,727 ffmpeg_wrapper 6598 137938292617344 [PROBE] Success in 0.12s
+INFO 2025-11-27 19:44:09,729 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_0] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:01:35 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmprprcotan.mp4...
+INFO 2025-11-27 19:44:13,843 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_0] Success in 4.11s
+INFO 2025-11-27 19:44:13,845 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_1] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:03:11 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpwtht10ee.mp4...
+INFO 2025-11-27 19:44:21,298 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_1] Success in 7.45s
+INFO 2025-11-27 19:44:21,299 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_2] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:04:47 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpe450f2ra.mp4...
+INFO 2025-11-27 19:44:32,268 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_2] Success in 10.97s
+INFO 2025-11-27 19:44:32,271 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_3] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:06:23 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmph8wz6srs.mp4...
+INFO 2025-11-27 19:44:47,974 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_3] Success in 15.70s
+INFO 2025-11-27 19:44:47,975 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_4] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:07:59 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmp5t1qxakn.mp4...
+INFO 2025-11-27 19:45:07,192 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_SEGMENT_4] Success in 19.22s
+INFO 2025-11-27 19:45:07,195 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_CONCAT] Starting: ffmpeg -f concat -safe 0 -i /tmp/tmp3_qqlzd5.txt -c copy -y /var/www/rextube.online/media/previews/preview_87.mp4...
+INFO 2025-11-27 19:45:07,466 ffmpeg_wrapper 6598 137938292617344 [PREVIEW_CONCAT] Success in 0.27s
+INFO 2025-11-27 19:45:07,467 preview_service 6598 137938292617344 [PREVIEW] Created: /var/www/rextube.online/media/previews/preview_87.mp4 (135414 bytes)
+INFO 2025-11-27 19:45:07,477 processing_pipeline 6598 137938292617344 [PIPELINE] Video 87: 35% - Starting video encoding...
+INFO 2025-11-27 19:45:07,478 ffmpeg_wrapper 6598 137938292617344 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 19:45:07,618 ffmpeg_wrapper 6598 137938292617344 [PROBE] Success in 0.14s
+INFO 2025-11-27 19:45:07,622 ffmpeg_wrapper 6598 137938292617344 Source resolution: 480x360
+INFO 2025-11-27 19:45:07,622 ffmpeg_wrapper 6598 137938292617344 Profile 360p (360p) - suitable
+INFO 2025-11-27 19:45:07,622 ffmpeg_wrapper 6598 137938292617344 Profile 360p - Mobile (360p) - suitable
+INFO 2025-11-27 19:45:07,623 ffmpeg_wrapper 6598 137938292617344 Profile 480p (480p) - skipped (upscale)
+INFO 2025-11-27 19:45:07,623 ffmpeg_wrapper 6598 137938292617344 Profile 720p - HD (720p) - skipped (upscale)
+INFO 2025-11-27 19:45:07,623 ffmpeg_wrapper 6598 137938292617344 Profile 1080p - Full HD (1080p) - skipped (upscale)
+INFO 2025-11-27 19:45:07,623 ffmpeg_wrapper 6598 137938292617344 Profile 720p (720p) - skipped (upscale)
+INFO 2025-11-27 19:45:07,623 ffmpeg_wrapper 6598 137938292617344 Profile 1080p (1080p) - skipped (upscale)
+INFO 2025-11-27 19:45:07,624 encoding_service 6598 137938292617344 [ENCODE] Encoding 2 profiles for video 87
+INFO 2025-11-27 19:45:07,624 encoding_service 6598 137938292617344 [ENCODE] Starting parallel encoding with 2 workers
+INFO 2025-11-27 19:45:07,628 encoding_service 6598 137938217371328 [ENCODE] Starting 360p for video 87
+INFO 2025-11-27 19:45:07,628 encoding_service 6598 137938225764032 [ENCODE] Starting 360p for video 87
+INFO 2025-11-27 19:45:07,629 ffmpeg_wrapper 6598 137938217371328 [ENCODE_360P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -vf scale=640:360 -c:v libx264 -preset medium -profile:v main -b:v 800k -c:a aac -b:a 128k -y /var/www/r...
+INFO 2025-11-27 19:45:07,630 ffmpeg_wrapper 6598 137938225764032 [ENCODE_360P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -vf scale=640:360 -c:v libx264 -preset medium -profile:v main -b:v 800k -c:a aac -b:a 128k -y /var/www/r...
+ERROR 2025-11-27 19:45:41,315 ffmpeg_wrapper 6598 137938225764032 [ENCODE_360P] FFmpeg failed with code 255: ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf
+ERROR 2025-11-27 19:45:41,318 encoding_service 6598 137938225764032 [ENCODE] Failed 360p: FFmpeg failed with code 255: ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf
+ERROR 2025-11-27 19:45:41,322 ffmpeg_wrapper 6598 137938217371328 [ENCODE_360P] FFmpeg failed with code 255: ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf
+ERROR 2025-11-27 19:45:41,323 encoding_service 6598 137938217371328 [ENCODE] Failed 360p: FFmpeg failed with code 255: ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libf
+ERROR 2025-11-27 19:48:59,484 log 7584 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:49:39,051 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:54:00,133 log 7584 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 19:59:59,960 log 7584 138599899820160 Invalid HTTP_HOST header: 'seexxx.ru'. You may need to add 'seexxx.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'seexxx.ru'. You may need to add 'seexxx.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:00:49,416 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:01:36,098 log 7583 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+INFO 2025-11-27 20:02:11,005 tasks 7590 123712181084288 Starting video processing for video 88
+INFO 2025-11-27 20:02:11,027 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 5% - Validating...
+INFO 2025-11-27 20:02:11,028 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Starting: ffmpeg -version...
+INFO 2025-11-27 20:02:11,220 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Success in 0.19s
+INFO 2025-11-27 20:02:11,223 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 10% - Analyzing source video...
+INFO 2025-11-27 20:02:11,223 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:02:11,348 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.13s
+INFO 2025-11-27 20:02:11,352 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 15% - Extracting poster...
+INFO 2025-11-27 20:02:11,353 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:02:11,477 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.12s
+INFO 2025-11-27 20:02:11,478 ffmpeg_wrapper 7590 123712181084288 [POSTER] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:30 -vframes 1 -vf scale=250:150 -f image2 -q:v 10 -y /var/www/rextube.online/media/posters/poster_88.j...
+INFO 2025-11-27 20:02:13,128 ffmpeg_wrapper 7590 123712181084288 [POSTER] Success in 1.65s
+INFO 2025-11-27 20:02:13,129 poster_service 7590 123712181084288 [POSTER] Created: /var/www/rextube.online/media/posters/poster_88.jpeg (4087 bytes)
+INFO 2025-11-27 20:02:13,131 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 25% - Generating preview...
+INFO 2025-11-27 20:02:13,131 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:02:13,344 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.21s
+INFO 2025-11-27 20:02:13,346 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:10 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpqyv4a6i5.mp4...
+INFO 2025-11-27 20:02:14,256 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Success in 0.91s
+INFO 2025-11-27 20:02:14,258 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:20 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmppzalu9yq.mp4...
+INFO 2025-11-27 20:02:15,721 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Success in 1.46s
+INFO 2025-11-27 20:02:15,722 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:30 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmp7d58ocpl.mp4...
+INFO 2025-11-27 20:02:17,548 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Success in 1.83s
+INFO 2025-11-27 20:02:17,550 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:40 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpk7rkc83n.mp4...
+INFO 2025-11-27 20:02:20,035 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Success in 2.49s
+INFO 2025-11-27 20:02:20,036 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -ss 00:00:50 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpfinh6lj4.mp4...
+INFO 2025-11-27 20:02:23,059 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Success in 3.02s
+INFO 2025-11-27 20:02:23,061 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Starting: ffmpeg -f concat -safe 0 -i /tmp/tmp86mva1a1.txt -c copy -y /var/www/rextube.online/media/previews/preview_88.mp4...
+INFO 2025-11-27 20:02:23,295 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Success in 0.23s
+INFO 2025-11-27 20:02:23,296 preview_service 7590 123712181084288 [PREVIEW] Created: /var/www/rextube.online/media/previews/preview_88.mp4 (158366 bytes)
+INFO 2025-11-27 20:02:23,298 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 35% - Starting video encoding...
+INFO 2025-11-27 20:02:23,298 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:02:23,516 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.22s
+INFO 2025-11-27 20:02:23,517 ffmpeg_wrapper 7590 123712181084288 Source resolution: 644x360
+INFO 2025-11-27 20:02:23,518 ffmpeg_wrapper 7590 123712181084288 Profile 360p - Mobile (360p) - suitable
+INFO 2025-11-27 20:02:23,518 ffmpeg_wrapper 7590 123712181084288 Profile 480p (480p) - skipped (upscale)
+INFO 2025-11-27 20:02:23,518 ffmpeg_wrapper 7590 123712181084288 Profile 720p - HD (720p) - skipped (upscale)
+INFO 2025-11-27 20:02:23,518 ffmpeg_wrapper 7590 123712181084288 Profile 1080p - Full HD (1080p) - skipped (upscale)
+INFO 2025-11-27 20:02:23,519 encoding_service 7590 123712181084288 [ENCODE] Encoding 1 profiles for video 88
+INFO 2025-11-27 20:02:23,521 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 35% - Encoding 360p...
+INFO 2025-11-27 20:02:23,522 encoding_service 7590 123712181084288 [ENCODE] Starting 360p for video 88
+INFO 2025-11-27 20:02:23,523 ffmpeg_wrapper 7590 123712181084288 [ENCODE_360P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4 -vf scale=640:360 -c:v libx264 -preset medium -profile:v main -b:v 800k -c:a aac -b:a 128k -y /var/www/rextube.o...
+WARNING 2025-11-27 20:02:56,942 log 7585 138599899820160 Not Found: /videos/api/progress/88/
+INFO 2025-11-27 20:02:58,388 ffmpeg_wrapper 7590 123712181084288 [ENCODE_360P] Success in 34.86s
+INFO 2025-11-27 20:02:58,391 encoding_service 7590 123712181084288 [ENCODE] Completed 360p: 6MB in 34.9s
+INFO 2025-11-27 20:02:58,398 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 95% - Finalizing...
+INFO 2025-11-27 20:02:58,401 processing_pipeline 7590 123712181084288 [PIPELINE] Video 88: 100% - Processing completed!
+INFO 2025-11-27 20:02:58,420 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:02:58,690 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.27s
+INFO 2025-11-27 20:02:58,715 services_encoding 7590 123712181084288 Deleted temp file: /var/www/rextube.online/media/videos/tmp/VID_0315_042446-world79.spcs.bio.mp4
+INFO 2025-11-27 20:02:58,724 services_encoding 7590 123712181084288 Video 88 processing completed successfully
+INFO 2025-11-27 20:02:58,725 services_encoding 7590 123712181084288 Metrics: {'source': {'width': 644, 'height': 360, 'duration': 60, 'bitrate': 510}, 'encoding': {'total_profiles': 1, 'successful': 1, 'failed': 0, 'total_output_size': 7133607, 'encoding_time': 34.864853858947754}, 'pipeline': {'total_time': 47.37443542480469, 'parallel_encoding': True}}
+INFO 2025-11-27 20:02:58,731 tasks 7590 123712181084288 Video 88 processing completed successfully
+INFO 2025-11-27 20:02:58,845 tasks 7591 123712181084288 Video tnjgyn processing completed for user testuser
+WARNING 2025-11-27 20:03:01,144 log 7585 138599899820160 Not Found: /videos/api/progress/88/
+WARNING 2025-11-27 20:03:49,620 log 7585 138599899820160 Not Found: /videos/api/progress/87/
+WARNING 2025-11-27 20:03:53,954 log 7585 138599899820160 Not Found: /videos/api/progress/87/
+WARNING 2025-11-27 20:04:02,191 log 7583 138599899820160 Not Found: /videos/api/progress/87/
+INFO 2025-11-27 20:06:40,879 tasks 7590 123712181084288 Starting video processing for video 89
+INFO 2025-11-27 20:06:40,887 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 5% - Validating...
+INFO 2025-11-27 20:06:40,888 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Starting: ffmpeg -version...
+INFO 2025-11-27 20:06:41,116 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Success in 0.23s
+INFO 2025-11-27 20:06:41,118 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 10% - Analyzing source video...
+INFO 2025-11-27 20:06:41,118 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:06:41,305 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.19s
+INFO 2025-11-27 20:06:41,308 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 15% - Extracting poster...
+INFO 2025-11-27 20:06:41,309 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:06:41,426 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.12s
+INFO 2025-11-27 20:06:41,427 ffmpeg_wrapper 7590 123712181084288 [POSTER] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:02:56 -vframes 1 -vf scale=250:150 -f image2 -q:v 10 -y /var/www/rextube.online/media/posters/poster_89.jpeg...
+INFO 2025-11-27 20:06:59,373 ffmpeg_wrapper 7590 123712181084288 [POSTER] Success in 17.95s
+INFO 2025-11-27 20:06:59,375 poster_service 7590 123712181084288 [POSTER] Created: /var/www/rextube.online/media/posters/poster_89.jpeg (3178 bytes)
+INFO 2025-11-27 20:06:59,383 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 25% - Generating preview...
+INFO 2025-11-27 20:06:59,384 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:06:59,595 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.21s
+INFO 2025-11-27 20:06:59,597 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:00:58 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpr8ubwh1j.mp4...
+INFO 2025-11-27 20:07:05,493 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Success in 5.90s
+INFO 2025-11-27 20:07:05,494 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:01:57 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpjiy1ngf3.mp4...
+INFO 2025-11-27 20:07:17,501 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Success in 12.01s
+INFO 2025-11-27 20:07:17,508 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:02:56 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpgw0j3v5g.mp4...
+INFO 2025-11-27 20:07:35,717 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Success in 18.21s
+INFO 2025-11-27 20:07:35,723 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:03:54 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpwfpm10dj.mp4...
+INFO 2025-11-27 20:08:00,250 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Success in 24.53s
+INFO 2025-11-27 20:08:00,251 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -ss 00:04:53 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmp41_g4nm7.mp4...
+INFO 2025-11-27 20:08:30,462 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Success in 30.21s
+INFO 2025-11-27 20:08:30,465 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Starting: ffmpeg -f concat -safe 0 -i /tmp/tmp4kdxsh09.txt -c copy -y /var/www/rextube.online/media/previews/preview_89.mp4...
+INFO 2025-11-27 20:08:30,600 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Success in 0.13s
+INFO 2025-11-27 20:08:30,600 preview_service 7590 123712181084288 [PREVIEW] Created: /var/www/rextube.online/media/previews/preview_89.mp4 (208595 bytes)
+INFO 2025-11-27 20:08:30,603 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 35% - Starting video encoding...
+INFO 2025-11-27 20:08:30,604 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:08:30,706 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.10s
+INFO 2025-11-27 20:08:30,707 ffmpeg_wrapper 7590 123712181084288 Source resolution: 540x720
+INFO 2025-11-27 20:08:30,707 ffmpeg_wrapper 7590 123712181084288 Profile 360p - Mobile (360p) - suitable
+INFO 2025-11-27 20:08:30,708 ffmpeg_wrapper 7590 123712181084288 Profile 480p (480p) - suitable
+INFO 2025-11-27 20:08:30,708 ffmpeg_wrapper 7590 123712181084288 Profile 720p - HD (720p) - suitable
+INFO 2025-11-27 20:08:30,708 ffmpeg_wrapper 7590 123712181084288 Profile 1080p - Full HD (1080p) - skipped (upscale)
+INFO 2025-11-27 20:08:30,708 encoding_service 7590 123712181084288 [ENCODE] Encoding 3 profiles for video 89
+INFO 2025-11-27 20:08:30,708 encoding_service 7590 123712181084288 [ENCODE] Starting parallel encoding with 2 workers
+INFO 2025-11-27 20:08:30,710 encoding_service 7590 123712114431680 [ENCODE] Starting 360p for video 89
+INFO 2025-11-27 20:08:30,712 ffmpeg_wrapper 7590 123712114431680 [ENCODE_360P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -vf scale=640:360 -c:v libx264 -preset medium -profile:v main -b:v 800k -c:a aac -b:a 128k -y /var/www/rextube.online/media/vi...
+INFO 2025-11-27 20:08:30,712 encoding_service 7590 123712036665024 [ENCODE] Starting 480p for video 89
+INFO 2025-11-27 20:08:30,715 ffmpeg_wrapper 7590 123712036665024 [ENCODE_480P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -vf scale=854:480 -c:v libx264 -preset medium -profile:v main -b:v 1200k -c:a aac -b:a 128k -y /var/www/rextube.online/media/v...
+ERROR 2025-11-27 20:10:45,132 log 7583 138599899820160 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:11:50,617 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+INFO 2025-11-27 20:14:46,775 ffmpeg_wrapper 7590 123712114431680 [ENCODE_360P] Success in 376.06s
+INFO 2025-11-27 20:14:46,779 encoding_service 7590 123712114431680 [ENCODE] Completed 360p: 39MB in 376.1s
+INFO 2025-11-27 20:14:46,781 encoding_service 7590 123712114431680 [ENCODE] Starting 720p for video 89
+INFO 2025-11-27 20:14:46,782 ffmpeg_wrapper 7590 123712114431680 [ENCODE_720P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4 -vf scale=1280:720 -c:v libx264 -preset medium -profile:v main -b:v 2500k -c:a aac -b:a 128k -y /var/www/rextube.online/media/...
+INFO 2025-11-27 20:14:46,792 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 53% - Encoded 360p (completed)
+ERROR 2025-11-27 20:16:22,817 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:16:53,167 log 7584 138599899820160 Invalid HTTP_HOST header: 'gmpay.online'. You may need to add 'gmpay.online' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.online'. You may need to add 'gmpay.online' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:16:54,052 log 7583 138599899820160 Invalid HTTP_HOST header: 'gmpay.online'. You may need to add 'gmpay.online' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.online'. You may need to add 'gmpay.online' to ALLOWED_HOSTS.
+INFO 2025-11-27 20:18:26,188 ffmpeg_wrapper 7590 123712036665024 [ENCODE_480P] Success in 595.47s
+INFO 2025-11-27 20:18:26,193 encoding_service 7590 123712036665024 [ENCODE] Completed 480p: 57MB in 595.5s
+INFO 2025-11-27 20:18:26,208 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 71% - Encoded 480p (completed)
+WARNING 2025-11-27 20:21:19,795 log 7585 138599899820160 Not Found: /videos/api/progress/89/
+WARNING 2025-11-27 20:21:24,254 log 7584 138599899820160 Not Found: /videos/api/progress/89/
+ERROR 2025-11-27 20:22:48,226 log 7583 138599899820160 Invalid HTTP_HOST header: 'seexxx.online'. You may need to add 'seexxx.online' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'seexxx.online'. You may need to add 'seexxx.online' to ALLOWED_HOSTS.
+WARNING 2025-11-27 20:26:56,410 log 7584 138599899820160 Not Found: /videos/api/progress/89/
+WARNING 2025-11-27 20:27:00,561 log 7585 138599899820160 Not Found: /videos/api/progress/89/
+ERROR 2025-11-27 20:27:06,554 log 7585 138599899820160 Invalid HTTP_HOST header: '/var/www/rextube.online/rextube.sock:'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '/var/www/rextube.online/rextube.sock:'. The domain name provided is not valid according to RFC 1034/1035.
+ERROR 2025-11-27 20:27:07,727 log 7584 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:07,792 log 7585 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:07,791 log 7583 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:08,927 log 7583 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:09,058 log 7584 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:09,095 log 7584 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:28,668 log 7585 138599899820160 Invalid HTTP_HOST header: '/var/www/rextube.online/rextube.sock:'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '/var/www/rextube.online/rextube.sock:'. The domain name provided is not valid according to RFC 1034/1035.
+ERROR 2025-11-27 20:27:29,778 log 7585 138599899820160 Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '93.183.71.104'. You may need to add '93.183.71.104' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:27:44,670 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+INFO 2025-11-27 20:27:49,682 ffmpeg_wrapper 7590 123712114431680 [ENCODE_720P] Success in 782.90s
+INFO 2025-11-27 20:27:49,684 encoding_service 7590 123712114431680 [ENCODE] Completed 720p: 112MB in 782.9s
+INFO 2025-11-27 20:27:49,690 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 90% - Encoded 720p (completed)
+INFO 2025-11-27 20:27:49,692 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 95% - Finalizing...
+INFO 2025-11-27 20:27:49,693 processing_pipeline 7590 123712181084288 [PIPELINE] Video 89: 100% - Processing completed!
+INFO 2025-11-27 20:27:49,706 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:27:49,962 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.26s
+INFO 2025-11-27 20:27:49,991 services_encoding 7590 123712181084288 Deleted temp file: /var/www/rextube.online/media/videos/tmp/2-world79.spcs.bio.mp4
+INFO 2025-11-27 20:27:49,998 services_encoding 7590 123712181084288 Video 89 processing completed successfully
+INFO 2025-11-27 20:27:49,999 services_encoding 7590 123712181084288 Metrics: {'source': {'width': 540, 'height': 720, 'duration': 352, 'bitrate': 828}, 'encoding': {'total_profiles': 3, 'successful': 3, 'failed': 0, 'total_output_size': 219862907, 'encoding_time': 1754.4346029758453}, 'pipeline': {'total_time': 1268.8064467906952, 'parallel_encoding': True}}
+INFO 2025-11-27 20:27:50,003 tasks 7590 123712181084288 Video 89 processing completed successfully
+INFO 2025-11-27 20:27:50,024 tasks 7591 123712181084288 Video sdDBSsDb processing completed for user newmodel
+INFO 2025-11-27 20:29:41,187 tasks 7590 123712181084288 Starting video processing for video 90
+INFO 2025-11-27 20:29:41,196 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 5% - Validating...
+INFO 2025-11-27 20:29:41,197 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Starting: ffmpeg -version...
+INFO 2025-11-27 20:29:41,362 ffmpeg_wrapper 7590 123712181084288 [VERSION_CHECK] Success in 0.16s
+INFO 2025-11-27 20:29:41,365 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 10% - Analyzing source video...
+INFO 2025-11-27 20:29:41,366 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:29:41,547 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.18s
+INFO 2025-11-27 20:29:41,552 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 15% - Extracting poster...
+INFO 2025-11-27 20:29:41,553 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:29:41,675 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.12s
+INFO 2025-11-27 20:29:41,676 ffmpeg_wrapper 7590 123712181084288 [POSTER] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:04:47 -vframes 1 -vf scale=250:150 -f image2 -q:v 10 -y /var/www/rextube.online/media/posters/pos...
+INFO 2025-11-27 20:29:54,358 ffmpeg_wrapper 7590 123712181084288 [POSTER] Success in 12.68s
+INFO 2025-11-27 20:29:54,359 poster_service 7590 123712181084288 [POSTER] Created: /var/www/rextube.online/media/posters/poster_90.jpeg (1946 bytes)
+INFO 2025-11-27 20:29:54,361 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 25% - Generating preview...
+INFO 2025-11-27 20:29:54,362 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:29:54,566 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.20s
+INFO 2025-11-27 20:29:54,568 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:01:35 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpkhbusgx4.mp4...
+INFO 2025-11-27 20:29:58,473 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_0] Success in 3.91s
+INFO 2025-11-27 20:29:58,474 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:03:11 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmp50fxzwhe.mp4...
+INFO 2025-11-27 20:30:06,611 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_1] Success in 8.14s
+INFO 2025-11-27 20:30:06,616 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:04:47 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmppvys3cl8.mp4...
+INFO 2025-11-27 20:30:19,468 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_2] Success in 12.85s
+INFO 2025-11-27 20:30:19,472 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:06:23 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmp6zg52tu2.mp4...
+INFO 2025-11-27 20:30:35,715 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_3] Success in 16.24s
+INFO 2025-11-27 20:30:35,716 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -ss 00:07:59 -t 2 -vf scale=250:150 -c:v libx264 -preset fast -an -y /tmp/tmpbh0w04_q.mp4...
+INFO 2025-11-27 20:30:56,478 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_SEGMENT_4] Success in 20.76s
+INFO 2025-11-27 20:30:56,481 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Starting: ffmpeg -f concat -safe 0 -i /tmp/tmp54ouoqe1.txt -c copy -y /var/www/rextube.online/media/previews/preview_90.mp4...
+INFO 2025-11-27 20:30:56,672 ffmpeg_wrapper 7590 123712181084288 [PREVIEW_CONCAT] Success in 0.19s
+INFO 2025-11-27 20:30:56,672 preview_service 7590 123712181084288 [PREVIEW] Created: /var/www/rextube.online/media/previews/preview_90.mp4 (135414 bytes)
+INFO 2025-11-27 20:30:56,682 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 35% - Starting video encoding...
+INFO 2025-11-27 20:30:56,683 ffmpeg_wrapper 7590 123712181084288 [PROBE] Starting: ffprobe -v quiet -print_format json -show_format -show_streams /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4...
+INFO 2025-11-27 20:30:56,927 ffmpeg_wrapper 7590 123712181084288 [PROBE] Success in 0.24s
+INFO 2025-11-27 20:30:56,928 ffmpeg_wrapper 7590 123712181084288 Source resolution: 480x360
+INFO 2025-11-27 20:30:56,928 ffmpeg_wrapper 7590 123712181084288 Profile 360p - Mobile (360p) - suitable
+INFO 2025-11-27 20:30:56,928 ffmpeg_wrapper 7590 123712181084288 Profile 480p (480p) - skipped (upscale)
+INFO 2025-11-27 20:30:56,929 ffmpeg_wrapper 7590 123712181084288 Profile 720p - HD (720p) - skipped (upscale)
+INFO 2025-11-27 20:30:56,929 ffmpeg_wrapper 7590 123712181084288 Profile 1080p - Full HD (1080p) - skipped (upscale)
+INFO 2025-11-27 20:30:56,930 encoding_service 7590 123712181084288 [ENCODE] Encoding 1 profiles for video 90
+INFO 2025-11-27 20:30:56,932 processing_pipeline 7590 123712181084288 [PIPELINE] Video 90: 35% - Encoding 360p...
+INFO 2025-11-27 20:30:56,932 encoding_service 7590 123712181084288 [ENCODE] Starting 360p for video 90
+INFO 2025-11-27 20:30:56,933 ffmpeg_wrapper 7590 123712181084288 [ENCODE_360P] Starting: ffmpeg -i /var/www/rextube.online/media/videos/tmp/Minet.marina_baluetsja.-world79.spcs.bio.mp4 -vf scale=640:360 -c:v libx264 -preset medium -profile:v main -b:v 800k -c:a aac -b:a 128k -y /var/www/r...
+ERROR 2025-11-27 20:31:07,233 log 7583 138599899820160 Invalid HTTP_HOST header: 'www.seexxx.ru'. You may need to add 'www.seexxx.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'www.seexxx.ru'. You may need to add 'www.seexxx.ru' to ALLOWED_HOSTS.
+INFO 2025-11-27 20:31:48,440 alert_service 7591 123712181084288 [ALERTS] Starting alert rule check
+INFO 2025-11-27 20:31:52,640 ffmpeg_wrapper 7591 123712181084288 [VERSION_CHECK] Starting: ffmpeg -version...
+INFO 2025-11-27 20:31:52,900 ffmpeg_wrapper 7591 123712181084288 [VERSION_CHECK] Success in 0.26s
+INFO 2025-11-27 20:31:52,911 alert_service 7591 123712181084288 [ALERTS] Check completed, 0 alerts triggered
+ERROR 2025-11-27 20:33:04,165 log 7585 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+WARNING 2025-11-27 20:33:11,460 log 7583 138599899820160 Not Found: /videos/api/progress/90/
+WARNING 2025-11-27 20:33:15,800 log 7584 138599899820160 Not Found: /videos/api/progress/90/
+ERROR 2025-11-27 20:33:32,094 log 7584 138599899820160 Invalid HTTP_HOST header: 'blackmods.ru'. You may need to add 'blackmods.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'blackmods.ru'. You may need to add 'blackmods.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:33:32,682 log 7583 138599899820160 Invalid HTTP_HOST header: 'blackmods.ru'. You may need to add 'blackmods.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'blackmods.ru'. You may need to add 'blackmods.ru' to ALLOWED_HOSTS.
+ERROR 2025-11-27 20:34:48,074 log 7584 138599899820160 Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/rextube.online/venv/lib/python3.12/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'gmpay.ru'. You may need to add 'gmpay.ru' to ALLOWED_HOSTS.

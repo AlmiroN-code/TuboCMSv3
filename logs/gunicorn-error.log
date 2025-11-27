@@ -1,0 +1,55 @@
+[2025-11-27 18:53:05 +0300] [4850] [INFO] Starting gunicorn 21.2.0
+[2025-11-27 18:53:05 +0300] [4850] [INFO] Listening at: unix:/var/www/rextube.online/rextube.sock (4850)
+[2025-11-27 18:53:05 +0300] [4850] [INFO] Using worker: sync
+[2025-11-27 18:53:05 +0300] [4851] [INFO] Booting worker with pid: 4851
+[2025-11-27 18:53:05 +0300] [4852] [INFO] Booting worker with pid: 4852
+[2025-11-27 18:53:05 +0300] [4856] [INFO] Booting worker with pid: 4856
+[2025-11-27 19:01:34 +0300] [4850] [INFO] Handling signal: term
+[2025-11-27 19:01:34 +0300] [4852] [INFO] Worker exiting (pid: 4852)
+[2025-11-27 19:01:34 +0300] [4851] [INFO] Worker exiting (pid: 4851)
+[2025-11-27 19:01:34 +0300] [4856] [INFO] Worker exiting (pid: 4856)
+[2025-11-27 19:01:34 +0300] [4850] [INFO] Shutting down: Master
+[2025-11-27 19:01:35 +0300] [5918] [INFO] Starting gunicorn 21.2.0
+[2025-11-27 19:01:35 +0300] [5918] [INFO] Listening at: unix:/var/www/rextube.online/rextube.sock (5918)
+[2025-11-27 19:01:35 +0300] [5918] [INFO] Using worker: sync
+[2025-11-27 19:01:35 +0300] [5919] [INFO] Booting worker with pid: 5919
+[2025-11-27 19:01:35 +0300] [5920] [INFO] Booting worker with pid: 5920
+[2025-11-27 19:01:35 +0300] [5921] [INFO] Booting worker with pid: 5921
+[2025-11-27 19:04:33 +0300] [5918] [INFO] Handling signal: term
+[2025-11-27 19:04:33 +0300] [5919] [INFO] Worker exiting (pid: 5919)
+[2025-11-27 19:04:33 +0300] [5920] [INFO] Worker exiting (pid: 5920)
+[2025-11-27 19:04:33 +0300] [5921] [INFO] Worker exiting (pid: 5921)
+[2025-11-27 19:04:34 +0300] [5918] [INFO] Shutting down: Master
+[2025-11-27 19:04:34 +0300] [6164] [INFO] Starting gunicorn 21.2.0
+[2025-11-27 19:04:34 +0300] [6164] [INFO] Listening at: unix:/var/www/rextube.online/rextube.sock (6164)
+[2025-11-27 19:04:34 +0300] [6164] [INFO] Using worker: sync
+[2025-11-27 19:04:34 +0300] [6165] [INFO] Booting worker with pid: 6165
+[2025-11-27 19:04:34 +0300] [6167] [INFO] Booting worker with pid: 6167
+[2025-11-27 19:04:34 +0300] [6168] [INFO] Booting worker with pid: 6168
+[2025-11-27 19:08:36 +0300] [6164] [INFO] Handling signal: term
+[2025-11-27 19:08:36 +0300] [6165] [INFO] Worker exiting (pid: 6165)
+[2025-11-27 19:08:36 +0300] [6167] [INFO] Worker exiting (pid: 6167)
+[2025-11-27 19:08:36 +0300] [6168] [INFO] Worker exiting (pid: 6168)
+[2025-11-27 19:08:36 +0300] [6164] [INFO] Shutting down: Master
+[2025-11-27 19:08:37 +0300] [6287] [INFO] Starting gunicorn 21.2.0
+[2025-11-27 19:08:37 +0300] [6287] [INFO] Listening at: unix:/var/www/rextube.online/rextube.sock (6287)
+[2025-11-27 19:08:37 +0300] [6287] [INFO] Using worker: sync
+[2025-11-27 19:08:37 +0300] [6288] [INFO] Booting worker with pid: 6288
+[2025-11-27 19:08:37 +0300] [6292] [INFO] Booting worker with pid: 6292
+[2025-11-27 19:08:37 +0300] [6294] [INFO] Booting worker with pid: 6294
+[2025-11-27 19:11:52 +0300] [6287] [INFO] Handling signal: term
+[2025-11-27 19:11:52 +0300] [6288] [INFO] Worker exiting (pid: 6288)
+[2025-11-27 19:11:52 +0300] [6292] [INFO] Worker exiting (pid: 6292)
+[2025-11-27 19:11:52 +0300] [6294] [INFO] Worker exiting (pid: 6294)
+[2025-11-27 19:11:53 +0300] [6287] [INFO] Shutting down: Master
+[2025-11-27 19:11:53 +0300] [6478] [INFO] Starting gunicorn 21.2.0
+[2025-11-27 19:11:53 +0300] [6478] [INFO] Listening at: unix:/var/www/rextube.online/rextube.sock (6478)
+[2025-11-27 19:11:53 +0300] [6478] [INFO] Using worker: sync
+[2025-11-27 19:11:53 +0300] [6480] [INFO] Booting worker with pid: 6480
+[2025-11-27 19:11:53 +0300] [6485] [INFO] Booting worker with pid: 6485
+[2025-11-27 19:11:53 +0300] [6486] [INFO] Booting worker with pid: 6486
+[2025-11-27 19:31:48 +0300] [6478] [INFO] Handling signal: term
+[2025-11-27 19:31:48 +0300] [6480] [INFO] Worker exiting (pid: 6480)
+[2025-11-27 19:31:48 +0300] [6485] [INFO] Worker exiting (pid: 6485)
+[2025-11-27 19:31:48 +0300] [6486] [INFO] Worker exiting (pid: 6486)
+[2025-11-27 19:31:49 +0300] [6478] [INFO] Shutting down: Master
