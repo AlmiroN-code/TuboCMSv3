@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Notifications {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-bell"></i> Notifications</h1>
+    <p class="page-description">All your notifications</p>
+</div>
+
+<div class="notifications-page">
+    {% if notifications %}
+        <div class="notifications-list-page">
+            {% for notification in notifications %}
+                <div class="notification-item-page {% if not notification.is_read %}unread{% endif %}">
+                    <div class="notification-avatar">
+                        {% if notification.sender %}
+                            {% if notification.sender.avatar %}
+                                <img src="{{ notification.sender.avatar.url }}" alt="{{ notification.sender.username }}">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    {% get_avatar_initial notification.sender %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="system-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <div class="notification-title">{{ notification.title }}</div>
+                            <div class="notification-time">{{ notification.created_at|time_ago }}</div>
+                        </div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        
+                        {% if notification.action_url %}
+                            <div class="notification-actions">
+                                <a href="{{ notification.action_url }}" class="btn btn--primary btn--sm">
+                                    Go to
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-type-icon">
+                        {% if notification.notification_type == 'friend_request' %}
+                            <i class="fas fa-user-plus"></i>
+                        {% elif notification.notification_type == 'friend_accepted' %}
+                            <i class="fas fa-user-check"></i>
+                        {% elif notification.notification_type == 'new_subscriber' %}
+                            <i class="fas fa-heart"></i>
+                        {% elif notification.notification_type == 'new_video' %}
+                            <i class="fas fa-video"></i>
+                        {% elif notification.notification_type == 'video_like' %}
+                            <i class="fas fa-thumbs-up"></i>
+                        {% elif notification.notification_type == 'video_comment' %}
+                            <i class="fas fa-comment"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if notifications.has_other_pages %}
+            <div class="pagination-container">
+                <nav class="pagination">
+                    {% if notifications.has_previous %}
+                        <a href="?page={{ notifications.previous_page_number }}" class="page-link prev">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    {% endif %}
+                    
+                    <div class="page-numbers">
+                        {% for num in notifications.paginator.page_range %}
+                            {% if num == notifications.number %}
+                                <span class="page-link current">{{ num }}</span>
+                            {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                            {% elif num == 1 %}
+                                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                                {% if notifications.number > 4 %}
+                                    <span class="page-ellipsis">...</span>
+                                {% endif %}
+                            {% elif num == notifications.paginator.num_pages %}
+                                {% if notifications.number < notifications.paginator.num_pages|add:'-3' %}
+                                    <span class="page-ellipsis">...</span>
+                                {% endif %}
+                                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    {% if notifications.has_next %}
+                        <a href="?page={{ notifications.next_page_number }}" class="page-link next">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+                
+                <div class="pagination-info">
+                    Showing {{ notifications.start_index }}-{{ notifications.end_index }} of {{ notifications.paginator.count }} notifications
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="no-content">
+            <i class="fas fa-bell-slash"></i>
+            <h3>No notifications</h3>
+            <p>You don't have any notifications yet</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.notifications-page{max-width:800px;margin:0 auto}
+.notifications-list-page{background:var(--card-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border-color)}
+.notification-item-page{padding:20px;border-bottom:1px solid var(--border-color);display:flex;align-items:flex-start;gap:16px;transition:background-color .2s}
+.notification-item-page:hover{background-color:var(--hover-bg)}
+.notification-item-page.unread{background-color:rgba(var(--accent-rgb),.05);border-left:4px solid var(--accent-color)}
+.notification-item-page:last-child{border-bottom:none}
+
+.notification-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.notification-title{font-weight:600;color:var(--text-primary);font-size:16px}
+.notification-time{color:var(--text-muted);font-size:12px;white-space:nowrap}
+.notification-message{color:var(--text-secondary);line-height:1.5;margin-bottom:12px}
+.notification-actions{margin-top:12px}
+
+.notification-type-icon{color:var(--accent-color);font-size:20px;margin-top:4px}
+</style>
+{% endblock %}
+
+
+

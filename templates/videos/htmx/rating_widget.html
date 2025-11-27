@@ -1,0 +1,49 @@
+{% load static %}
+<div id="rating-widget-{{ video.id }}" class="rating-widget">
+    <!-- Rating buttons -->
+    <div class="rating-buttons">
+        <button class="rating-btn like-btn {% if user_rating == 1 %}active{% endif %}" 
+                hx-post="{% url 'videos:htmx_rating' video.slug %}"
+                hx-vals='{"value": 1}'
+                hx-target="#rating-widget-{{ video.id }}"
+                hx-swap="outerHTML"
+                hx-indicator="#rating-widget-{{ video.id }}"
+                {% if user_rating == 1 %}title="Remove like"{% else %}title="Like"{% endif %}>
+            <span class="emoji">👍</span>
+            <span class="text">Like</span>
+            <span class="count">{{ stats.likes }}</span>
+        </button>
+        
+        <button class="rating-btn dislike-btn {% if user_rating == -1 %}active{% endif %}" 
+                hx-post="{% url 'videos:htmx_rating' video.slug %}"
+                hx-vals='{"value": -1}'
+                hx-target="#rating-widget-{{ video.id }}"
+                hx-swap="outerHTML"
+                hx-indicator="#rating-widget-{{ video.id }}"
+                {% if user_rating == -1 %}title="Remove dislike"{% else %}title="Dislike"{% endif %}>
+            <span class="emoji">👎</span>
+            <span class="text">Dislike</span>
+            <span class="count">{{ stats.dislikes }}</span>
+        </button>
+    </div>
+    
+    <!-- Progress bar -->
+    <div class="rating-progress-container">
+        <div class="rating-progress-bar">
+            <div class="rating-progress-likes" style="width: {{ stats.likes_percent }}%"></div>
+            <div class="rating-progress-dislikes" style="width: {{ stats.dislikes_percent }}%"></div>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="rating-stats">
+        <div class="rating-percentages">
+            <span class="likes-percent">{{ stats.likes_percent }}% likes</span>
+            <span class="dislikes-percent">{{ stats.dislikes_percent }}% dislikes</span>
+        </div>
+        <div class="rating-emoji" title="Overall sentiment">
+            {{ stats.emoji }}
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Playlists</title>
+</head>
+<body>
+    <h1>Public Playlists Test</h1>
+    {% if playlists %}
+        <ul>
+            {% for playlist in playlists %}
+                <li>
+                    {{ playlist.title }} - {{ playlist.videos_count }} videos
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No playlists found</p>
+    {% endif %}
+</body>
+</html>

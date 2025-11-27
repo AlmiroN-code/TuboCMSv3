@@ -1,0 +1,21 @@
+<form hx-post="{% url 'comments:edit' comment.id %}" 
+      hx-target="#comment-edit-{{ comment.id }}"
+      hx-swap="outerHTML"
+      class="comment-edit-form">
+    <div class="form-group">
+        <textarea name="content" 
+                  class="form-control"
+                  rows="3"
+                  required>{{ comment.content }}</textarea>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary btn--sm">Save</button>
+        <button type="button" class="btn btn--secondary btn--sm" 
+                hx-get="{% url 'comments:htmx_likes' comment.id %}"
+                hx-target="#comment-edit-{{ comment.id }}"
+                hx-swap="outerHTML">
+            Cancel
+        </button>
+    </div>
+</form>

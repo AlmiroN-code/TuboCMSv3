@@ -1,0 +1,26 @@
+{% load core_tags %}
+<div class="recommendations-grid">
+    {% for video in videos %}
+        <div class="recommendation-card">
+            <a href="{% url 'videos:detail' video.slug %}">
+                <div class="recommendation-thumbnail">
+                    {% if video.preview %}
+                        <video src="{{ video.preview.url }}" alt="{{ video.title }}" loading="lazy" muted></video>
+                    {% else %}
+                        <div class="poster-placeholder"></div>
+                    {% endif %}
+                    <span class="duration">{{ video.duration|format_duration }}</span>
+                </div>
+            </a>
+            <div class="recommendation-info">
+                <h4 class="recommendation-title">{{ video.title|truncate_text:60 }}</h4>
+                <div class="recommendation-meta">
+                    <span class="channel">{{ video.user.display_name }}</span>
+                    <span class="views">{{ video.views_count|format_views }} views</span>
+                    <span class="date">{{ video.created_at|time_ago }}</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+

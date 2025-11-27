@@ -1,0 +1,88 @@
+{% load core_tags %}
+<div class="comment-item" id="comment-{{ comment.id }}">
+    <div class="comment-header">
+        <div class="comment-author">
+            <div class="comment-avatar">
+                {% get_avatar_initial comment.user %}
+            </div>
+            <div class="comment-info">
+                <span class="author-name">{{ comment.user.display_name }}</span>
+                <span class="comment-date">{{ comment.created_at|time_ago }}</span>
+            </div>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="comment-actions">
+                <button class="comment-action-btn" 
+                        hx-get="{% url 'comments:htmx_likes' comment.id %}"
+                        hx-target="#comment-likes-{{ comment.id }}"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span>{{ comment.likes_count }}</span>
+                </button>
+                
+                {% if user == comment.user %}
+                    <button class="comment-action-btn edit-btn"
+                            hx-get="{% url 'comments:htmx_edit_form' comment.id %}"
+                            hx-target="#comment-edit-{{ comment.id }}"
+                            hx-swap="outerHTML">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    
+                    <button class="comment-action-btn delete-btn"
+                            hx-post="{% url 'comments:delete' comment.id %}"
+                            hx-target="#comment-{{ comment.id }}"
+                            hx-swap="outerHTML"
+                            hx-confirm="Delete comment?">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                {% else %}
+                    <button class="comment-action-btn report-btn"
+                            hx-get="{% url 'comments:htmx_report_form' comment.id %}"
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="comment-content">
+        <div id="comment-edit-{{ comment.id }}">
+            <p>{{ comment.content|linebreaks }}</p>
+        </div>
+        
+        <div id="comment-likes-{{ comment.id }}">
+            {% include 'comments/htmx/comment_likes.html' %}
+        </div>
+    </div>
+    
+    {% if comment.replies_count > 0 %}
+        <div class="comment-replies">
+            <button class="show-replies-btn" 
+                    hx-get="{% url 'comments:htmx_replies' comment.id %}"
+                    hx-target="#replies-{{ comment.id }}"
+                    hx-swap="innerHTML">
+                <i class="fas fa-chevron-down"></i>
+                Show {{ comment.replies_count }} replies
+            </button>
+            
+            <div id="replies-{{ comment.id }}" class="replies-container"></div>
+        </div>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        <div class="reply-form">
+            <button class="reply-btn" 
+                    hx-get="{% url 'comments:htmx_reply_form' comment.video.slug comment.id %}"
+                    hx-target="#reply-form-{{ comment.id }}"
+                    hx-swap="innerHTML">
+                <i class="fas fa-reply"></i>
+                Reply
+            </button>
+            
+            <div id="reply-form-{{ comment.id }}"></div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Videos by tag "{{ tag.name }}" - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Tag: {{ tag.name }}</h1>
+    <p class="page-description">Videos tagged with "{{ tag.name }}"</p>
+</div>
+
+{% if videos %}
+    <div class="video-grid">
+        {% for video in videos %}
+            {% include 'partials/video_card.html' with video=video %}
+        {% endfor %}
+    </div>
+    
+    {% if videos.has_other_pages %}
+        {% include 'partials/pagination.html' %}
+    {% endif %}
+{% else %}
+    <div class="no-content">
+        <i class="fas fa-tag"></i>
+        <h3>No videos with this tag</h3>
+        <p>No videos found with tag "{{ tag.name }}" yet.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

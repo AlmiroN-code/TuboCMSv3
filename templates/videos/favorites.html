@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Избранное - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1><i class="fas fa-heart"></i> Избранное</h1>
+        <p class="page-description">Ваши любимые видео ({{ total_count }})</p>
+    </div>
+
+    {% if favorites %}
+        <div class="video-grid">
+            {% for favorite in favorites %}
+                {% include 'partials/video_card.html' with video=favorite.video %}
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if favorites.has_other_pages %}
+            <div class="pagination">
+                {% if favorites.has_previous %}
+                    <a href="?page={{ favorites.previous_page_number }}" class="btn btn--outline">
+                        <i class="fas fa-chevron-left"></i> Предыдущая
+                    </a>
+                {% endif %}
+                
+                <div class="page-info">
+                    Страница {{ favorites.number }} из {{ favorites.paginator.num_pages }}
+                </div>
+                
+                {% if favorites.has_next %}
+                    <a href="?page={{ favorites.next_page_number }}" class="btn btn--outline">
+                        Следующая <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="no-content">
+            <i class="fas fa-heart"></i>
+            <h3>Нет избранных видео</h3>
+            <p>Добавляйте видео в избранное, нажимая на иконку сердечка</p>
+            <a href="{% url 'videos:list' %}" class="btn btn--primary">
+                <i class="fas fa-video"></i> Смотреть видео
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

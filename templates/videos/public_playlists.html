@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Публичные плейлисты - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="playlists-container">
+    <div class="page-header">
+        <h1><i class="fas fa-globe"></i> Публичные плейлисты</h1>
+        <p class="page-description">Плейлисты от пользователей сообщества</p>
+    </div>
+
+    <!-- Поиск и фильтры -->
+    <div class="search-filters">
+        <form method="GET" class="filters-form">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <input type="text" name="search" placeholder="Поиск плейлистов..." 
+                           value="{{ search }}" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <select name="sort" class="form-control">
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Новые</option>
+                        <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Популярные</option>
+                        <option value="most_videos" {% if sort == 'most_videos' %}selected{% endif %}>Больше видео</option>
+                        <option value="most_followed" {% if sort == 'most_followed' %}selected{% endif %}>Больше подписчиков</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button type="submit" class="btn">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if playlists %}
+        <div class="playlists-grid">
+            {% for playlist in playlists %}
+                <div class="playlist-card">
+                    <div class="playlist-thumbnail">
+                        <a href="{% url 'videos:playlist_detail' playlist_id=playlist.id %}">
+                            {% if playlist.display_thumbnail %}
+                                <img src="{{ playlist.display_thumbnail.url }}" alt="{{ playlist.title }}" loading="lazy">
+                            {% else %}
+                                <div class="playlist-placeholder">
+                                    <i class="fas fa-list"></i>
+                                    <span>{{ playlist.videos_count }}</span>
+                                </div>
+                            {% endif %}
+                        </a>
+                        
+                        <div class="playlist-overlay">
+                            <div class="video-count">
+                                <i class="fas fa-play"></i>
+                                {{ playlist.videos_count }} видео
+                            </div>
+                        </div>
+                        
+                        <div class="playlist-privacy">
+                            <i class="fas fa-globe" title="Публичный"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="playlist-info">
+                        <h3 class="playlist-title">
+                            <a href="{% url 'videos:playlist_detail' playlist_id=playlist.id %}">
+                                {{ playlist.title }}
+                            </a>
+                        </h3>
+                        
+                        <div class="playlist-author">
+                            <a href="{% url 'users:profile' username=playlist.user.username %}">
+                                <i class="fas fa-user"></i> {{ playlist.user.username }}
+                            </a>
+                        </div>
+                        
+                        {% if playlist.description %}
+                            <p class="playlist-description">{{ playlist.description|truncatechars:100 }}</p>
+                        {% endif %}
+                        
+                        <div class="playlist-meta">
+                            <span>{{ playlist.videos_count }} видео</span>
+                            <span>{{ playlist.likes_count }} лайков</span>
+                            <span>{{ playlist.followers_count }} подписчиков</span>
+                            <span>{{ playlist.created_at|time_ago }}</span>
+                        </div>
+                        
+                        {% if user.is_authenticated and playlist.user != user %}
+                            <div class="playlist-actions">
+                                <button class="btn btn--outline btn--sm" 
+                                        hx-post="{% url 'videos:playlist_follow' playlist_id=playlist.id %}"
+                                        hx-swap="none">
+                                    <i class="fas fa-plus"></i> Подписаться
+                                </button>
+                                <button class="btn btn--outline btn--sm" 
+                                        hx-post="{% url 'videos:playlist_like' playlist_id=playlist.id %}"
+                                        hx-swap="none">
+                                    <i class="fas fa-heart"></i> Лайк
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if playlists.has_other_pages %}
+            <div class="pagination">
+                {% if playlists.has_previous %}
+                    <a href="?page={{ playlists.previous_page_number }}&search={{ search }}&sort={{ sort }}" 
+                       class="btn btn--outline">
+                        <i class="fas fa-chevron-left"></i> Предыдущая
+                    </a>
+                {% endif %}
+                
+                <div class="page-info">
+                    Страница {{ playlists.number }} из {{ playlists.paginator.num_pages }}
+                </div>
+                
+                {% if playlists.has_next %}
+                    <a href="?page={{ playlists.next_page_number }}&search={{ search }}&sort={{ sort }}" 
+                       class="btn btn--outline">
+                        Следующая <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="no-content">
+            <i class="fas fa-list"></i>
+            <h3>Нет публичных плейлистов</h3>
+            <p>Пока никто не создал публичные плейлисты</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'videos:playlist_create' %}" class="btn btn--primary">
+                    <i class="fas fa-plus"></i> Создать первый плейлист
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.playlists-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.page-header h1 i {
+    color: var(--accent-color);
+    margin-right: 15px;
+}
+
+.page-description {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.search-filters {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.filter-row {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.filter-group {
+    flex: 1;
+}
+
+.filter-group:last-child {
+    flex: 0 0 auto;
+}
+
+.playlists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.playlist-author {
+    margin-bottom: 10px;
+}
+
+.playlist-author a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.playlist-author a:hover {
+    color: var(--accent-color);
+}
+
+.playlist-author i {
+    margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .playlists-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

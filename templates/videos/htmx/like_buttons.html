@@ -1,0 +1,42 @@
+{% load core_tags %}
+<div class="video-actions">
+    <button class="action-btn like-btn" 
+            hx-post="{% url 'videos:htmx_like' video.slug %}" 
+            hx-vals='{"value": 1}'
+            hx-target="#video-actions"
+            hx-swap="outerHTML"
+            hx-indicator="#video-actions">
+        <i class="fas fa-thumbs-up"></i>
+        <span>{{ video.likes_count }}</span>
+    </button>
+    
+    <button class="action-btn dislike-btn" 
+            hx-post="{% url 'videos:htmx_like' video.slug %}" 
+            hx-vals='{"value": -1}'
+            hx-target="#video-actions"
+            hx-swap="outerHTML"
+            hx-indicator="#video-actions">
+        <i class="fas fa-thumbs-down"></i>
+        <span>{{ video.dislikes_count }}</span>
+    </button>
+    
+    <button class="action-btn share-btn">
+        <i class="fas fa-share"></i>
+        <span>Share</span>
+    </button>
+    
+    <button class="action-btn save-btn">
+        <i class="fas fa-bookmark"></i>
+        <span>Save</span>
+    </button>
+    
+    {% if user.is_authenticated and user != video.user %}
+        <button class="action-btn report-btn" 
+                hx-get="{% url 'videos:report' video.slug %}"
+                hx-target="body"
+                hx-swap="beforeend">
+            <i class="fas fa-flag"></i>
+            <span>Report</span>
+        </button>
+    {% endif %}
+</div>

@@ -1,0 +1,108 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'js/video-progress.js' %}"></script>
+<style>
+.video-processing-info {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.processing-actions {
+    margin-top: 10px;
+}
+
+.btn-retry {
+    background: #007cba;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-retry:hover {
+    background: #005a87;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+{% if original.pk and original.processing_status != 'completed' %}
+<div class="video-processing-info">
+    <h3>Обработка видео</h3>
+    
+    {% if original.processing_status == 'pending' %}
+        <p><strong>Статус:</strong> Ожидает обработки</p>
+        <p>Видео добавлено в очередь и будет обработано автоматически.</p>
+        
+    {% elif original.processing_status == 'processing' %}
+        <div data-video-progress 
+             data-video-id="{{ original.id }}" 
+             data-processing-status="{{ original.processing_status }}">
+            <p><strong>Статус:</strong> Обрабатывается</p>
+            <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" style="width: {{ original.processing_progress|default:0 }}%"></div>
+                </div>
+                <div class="progress-text">{{ original.processing_progress|default:0 }}% - Обработка...</div>
+            </div>
+        </div>
+        
+    {% elif original.processing_status == 'failed' or original.processing_status == 'error' %}
+        <p><strong>Статус:</strong> <span style="color: #dc3545;">Ошибка обработки</span></p>
+        {% if original.processing_error %}
+            <p><strong>Ошибка:</strong> {{ original.processing_error|truncatewords:20 }}</p>
+        {% endif %}
+        
+        <div class="processing-actions">
+            <a href="javascript:void(0)" class="btn-retry" onclick="retryProcessing({{ original.id }})">
+                Повторить обработку
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function retryProcessing(videoId) {
+    const btn = event.target;
+    btn.textContent = 'Повторяем...';
+    btn.disabled = true;
+    
+    fetch(`/videos/api/retry/${videoId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.error);
+            btn.textContent = 'Повторить обработку';
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при повторной обработке');
+        btn.textContent = 'Повторить обработку';
+        btn.disabled = false;
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

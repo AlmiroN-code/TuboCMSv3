@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Video {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="report-form">
+        <div class="report-header">
+            <i class="fas fa-flag"></i>
+            <h2>Report Video</h2>
+        </div>
+        
+        <div class="video-info">
+            <h3>Video: "{{ video.title }}"</h3>
+            <p>Author: {{ video.user.display_name }}</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.report_type.id_for_label }}">Report Type</label>
+                {{ form.report_type }}
+                {% if form.report_type.errors %}
+                    <div class="form-errors">
+                        {% for error in form.report_type.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Problem Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-errors">
+                        {% for error in form.description.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Please describe in detail what the problem is with this video</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Report
+                </button>
+                <a href="{% url 'videos:detail' video.slug %}" class="btn btn--secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.report-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.report-form {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.report-header {
+    background: #fff3cd;
+    color: #856404;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ffeaa7;
+}
+
+.report-header i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.report-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.video-info {
+    padding: 20px 30px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.video-info h3 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.video-info p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    padding: 0 30px;
+}
+
+.form-group:first-of-type {
+    padding-top: 30px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.form-control[type="select"] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.form-help {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.form-errors {
+    margin-top: 5px;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-actions {
+    padding: 20px 30px;
+    background: var(--bg-secondary);
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        padding: 0 20px;
+    }
+    
+    .form-actions {
+        padding: 20px;
+    }
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

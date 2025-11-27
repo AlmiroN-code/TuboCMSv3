@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Video - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-form">
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Delete Video</h2>
+        </div>
+        
+        <div class="delete-content">
+            <p>Are you sure you want to delete the video <strong>"{{ video.title }}"</strong>?</p>
+            <p class="warning-text">This action cannot be undone. The video and all associated data will be permanently deleted.</p>
+            
+            <div class="video-preview">
+                <div class="preview-thumbnail">
+                    {% if video.preview %}
+                        <video src="{{ video.preview.url }}" alt="{{ video.title }}" controls>
+                    {% else %}
+                        <div class="thumbnail-placeholder">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="preview-info">
+                    <h4>{{ video.title }}</h4>
+                    <p>{{ video.views_count|format_views }} views</p>
+                    <p>{{ video.created_at|time_ago }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="delete-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--primary">
+                <i class="fas fa-trash"></i>
+                Yes, delete video
+            </button>
+            <a href="{% url 'videos:detail' video.slug %}" class="btn btn--secondary">
+                <i class="fas fa-arrow-left"></i>
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+

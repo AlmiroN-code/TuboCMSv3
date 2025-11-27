@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load core_tags %}
+
+{% block title %}Community - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-users"></i> Community</h1>
+    <p class="page-description">Discover and connect with our community members</p>
+    <div class="community-stats">
+        <span class="stat-item">
+            <i class="fas fa-user-friends"></i>
+            {{ total_users }} member{{ total_users|pluralize }}
+        </span>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="community-filters">
+    <form method="get" class="filters-form">
+        <div class="filters-row">
+            <!-- Search -->
+            <div class="filter-group">
+                <label for="search">Search:</label>
+                <input type="text" id="search" name="search" value="{{ search }}" placeholder="Username, name, bio...">
+            </div>
+            
+            <!-- Sort -->
+            <div class="filter-group">
+                <label for="sort">Sort by:</label>
+                <select id="sort" name="sort">
+                    <option value="date_joined" {% if sort_by == 'date_joined' %}selected{% endif %}>Registration Date</option>
+                    <option value="videos_count" {% if sort_by == 'videos_count' %}selected{% endif %}>Videos Count</option>
+                    <option value="subscribers_count" {% if sort_by == 'subscribers_count' %}selected{% endif %}>Subscribers</option>
+                    <option value="username" {% if sort_by == 'username' %}selected{% endif %}>Username</option>
+                    <option value="last_login" {% if sort_by == 'last_login' %}selected{% endif %}>Last Active</option>
+                </select>
+            </div>
+            
+            <!-- Country -->
+            <div class="filter-group">
+                <label for="country">Country:</label>
+                <select id="country" name="country">
+                    <option value="">All Countries</option>
+                    {% for code, name in country_choices %}
+                        <option value="{{ code }}" {% if country == code %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div class="filters-row">
+            <!-- Gender -->
+            <div class="filter-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender">
+                    <option value="">All Genders</option>
+                    {% for value, label in gender_choices %}
+                        <option value="{{ value }}" {% if gender == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Orientation -->
+            <div class="filter-group">
+                <label for="orientation">Orientation:</label>
+                <select id="orientation" name="orientation">
+                    <option value="">All Orientations</option>
+                    {% for value, label in orientation_choices %}
+                        <option value="{{ value }}" {% if orientation == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Age Range -->
+            <div class="filter-group age-range">
+                <label>Age:</label>
+                <div class="age-inputs">
+                    <input type="number" id="age_min" name="age_min" value="{{ age_min }}" placeholder="Min" min="18" max="99">
+                    <span>-</span>
+                    <input type="number" id="age_max" name="age_max" value="{{ age_max }}" placeholder="Max" min="18" max="99">
+                </div>
+            </div>
+            
+            <!-- Avatar -->
+            <div class="filter-group">
+                <label for="has_avatar">Avatar:</label>
+                <select id="has_avatar" name="has_avatar">
+                    <option value="">All Users</option>
+                    <option value="yes" {% if has_avatar == 'yes' %}selected{% endif %}>With Avatar</option>
+                    <option value="no" {% if has_avatar == 'no' %}selected{% endif %}>Without Avatar</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filters-actions">
+            <button type="submit" class="btn btn--primary">
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+            <a href="{% url 'core:community' %}" class="btn btn--secondary">
+                <i class="fas fa-times"></i> Clear All
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Users Grid -->
+<div class="community-grid">
+    {% for user in users %}
+        <div class="user-card">
+            <div class="user-avatar">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}" loading="lazy">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {% get_avatar_initial user %}
+                    </div>
+                {% endif %}
+                {% if user.is_verified %}
+                    <div class="verified-badge" title="Verified User">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="user-info">
+                <h3 class="user-name">
+                    <a href="{% url 'members:profile' username=user.username %}">{{ user.display_name }}</a>
+                </h3>
+                <p class="username">@{{ user.username }}</p>
+                
+                {% if user.bio %}
+                    <p class="user-bio">{{ user.bio|truncatewords:15 }}</p>
+                {% endif %}
+                
+                <div class="user-details">
+                    {% if user.age %}
+                        <span class="detail-item">
+                            <i class="fas fa-birthday-cake"></i> {{ user.age }} years
+                        </span>
+                    {% endif %}
+                    
+                    {% if user.country %}
+                        <span class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i> {{ user.get_country_display }}
+                        </span>
+                    {% endif %}
+                    
+                    {% if user.gender %}
+                        <span class="detail-item">
+                            <i class="fas fa-venus-mars"></i> {{ user.get_gender_display_ru }}
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="user-stats">
+                    <div class="stat">
+                        <i class="fas fa-video"></i>
+                        <span>{{ user.videos_count_actual }} video{{ user.videos_count_actual|pluralize }}</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-users"></i>
+                        <span>{{ user.subscribers_count_actual }} subscriber{{ user.subscribers_count_actual|pluralize }}</span>
+                    </div>
+                    {% if user.total_views %}
+                        <div class="stat">
+                            <i class="fas fa-eye"></i>
+                            <span>{{ user.total_views|floatformat:0 }} view{{ user.total_views|pluralize }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="user-actions">
+                    <a href="{% url 'members:profile' username=user.username %}" class="btn btn--primary btn--sm">
+                        <i class="fas fa-user"></i> View Profile
+                    </a>
+                    {% if user != request.user and request.user.is_authenticated %}
+                        <button class="btn btn--secondary btn--sm subscribe-btn" 
+                                data-username="{{ user.username }}"
+                                hx-post="{% url 'members:subscribe' username=user.username %}"
+                                hx-headers='{"X-CSRFToken": "{{ request.COOKIES.csrftoken }}"}'
+                                hx-target="this"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-plus"></i> Subscribe
+                        </button>
+                    {% endif %}
+                </div>
+                
+                <div class="user-joined">
+                    <i class="fas fa-calendar-alt"></i>
+                    Joined {{ user.date_joined|date:"M Y" }}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-results">
+            <i class="fas fa-users-slash"></i>
+            <h3>No users found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+            <a href="{% url 'core:community' %}" class="btn btn--primary">View All Users</a>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if users.has_other_pages %}
+    <div class="pagination-container">
+        <nav class="pagination">
+            {% if users.has_previous %}
+                <a href="?{% url_replace request 'page' users.previous_page_number %}" class="page-link prev">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            {% endif %}
+            
+            <div class="page-numbers">
+                {% for num in users.paginator.page_range %}
+                    {% if num == users.number %}
+                        <span class="page-link current">{{ num }}</span>
+                    {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
+                        <a href="?{% url_replace request 'page' num %}" class="page-link">{{ num }}</a>
+                    {% elif num == 1 %}
+                        <a href="?{% url_replace request 'page' num %}" class="page-link">{{ num }}</a>
+                        {% if users.number > 4 %}
+                            <span class="page-ellipsis">...</span>
+                        {% endif %}
+                    {% elif num == users.paginator.num_pages %}
+                        {% if users.number < users.paginator.num_pages|add:'-3' %}
+                            <span class="page-ellipsis">...</span>
+                        {% endif %}
+                        <a href="?{% url_replace request 'page' num %}" class="page-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            {% if users.has_next %}
+                <a href="?{% url_replace request 'page' users.next_page_number %}" class="page-link next">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </nav>
+        
+        <div class="pagination-info">
+            Showing {{ users.start_index }}-{{ users.end_index }} of {{ users.paginator.count }} users
+        </div>
+    </div>
+{% endif %}
+
+<script>
+// Auto-submit form on filter change
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.filters-form');
+    const selects = form.querySelectorAll('select');
+    
+    selects.forEach(select => {
+        select.addEventListener('change', function() {
+            form.submit();
+        });
+    });
+    
+    // Age inputs with debounce
+    const ageInputs = form.querySelectorAll('input[type="number"]');
+    let timeout;
+    
+    ageInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                form.submit();
+            }, 1000);
+        });
+    });
+});
+</script>
+{% endblock %}

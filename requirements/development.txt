@@ -1,0 +1,28 @@
+# Include base requirements
+-r base.txt
+
+# Development specific
+django-debug-toolbar==4.2.0
+django-silk==5.0.4
+django-extensions==3.2.3
+
+# Code quality
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+pre-commit==3.6.0
+
+# Testing
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+factory-boy==3.3.0
+coverage==7.3.2
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+
+
+

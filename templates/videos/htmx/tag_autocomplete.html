@@ -1,0 +1,23 @@
+{% if tags %}
+<div id="tag-autocomplete-results" class="tag-autocomplete-results">
+    {% for tag in tags %}
+        <div class="tag-autocomplete-item" 
+             data-tag-id="{{ tag.id }}"
+             data-tag-name="{{ tag.name }}"
+             hx-on:click="addTag({{ tag.id }}, '{{ tag.name }}')">
+            {{ tag.name }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+

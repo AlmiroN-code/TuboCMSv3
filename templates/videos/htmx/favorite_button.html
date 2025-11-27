@@ -1,0 +1,10 @@
+{% load static %}
+<div id="fav-btn-{{ video.id }}" class="favorite-btn{% if active %} active{% endif %}"
+     role="button" aria-label="Add to Favorites" title="Add to Favorites"
+     hx-post="{% url 'videos:htmx_favorite' video.slug %}"
+     hx-headers='{"X-CSRFToken": "{{ request.COOKIES.csrftoken }}"}'
+     hx-target="#fav-btn-{{ video.id }}"
+     hx-swap="outerHTML"
+     hx-on:click="event.preventDefault(); event.stopPropagation();">
+    <i class="fas fa-heart"></i>
+</div>

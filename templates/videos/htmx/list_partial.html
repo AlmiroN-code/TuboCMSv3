@@ -1,0 +1,14 @@
+{% load core_tags %}
+<div class="video-grid">
+    {% for video in videos %}
+        {% include 'partials/video_card.html' %}
+    {% endfor %}
+</div>
+
+{% if videos.has_other_pages %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
+
+
+
+

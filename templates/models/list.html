@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Most popular pornstars {% if site_settings.add_site_name_to_title %}on {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+        
+        <!-- Main content -->
+            <div class="models-header">
+                <h1>Most popular pornstars</h1>
+                <p>Find your favorite porn model</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters-section mb-4">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="search" value="{{ request.GET.search }}" placeholder="Model name...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-select" id="gender" name="gender">
+                            <option value="">All</option>
+                            {% for value, label in genders %}
+                                <option value="{{ value }}" {% if request.GET.gender == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="hair_color" class="form-label">Hair Color</label>
+                        <select class="form-select" id="hair_color" name="hair_color">
+                            <option value="">All</option>
+                            {% for value, label in hair_colors %}
+                                <option value="{{ value }}" {% if request.GET.hair_color == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="eye_color" class="form-label">Eye Color</label>
+                        <select class="form-select" id="eye_color" name="eye_color">
+                            <option value="">All</option>
+                            {% for value, label in eye_colors %}
+                                <option value="{{ value }}" {% if request.GET.eye_color == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="sort" class="form-label">Sort</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
+                            <option value="oldest" {% if request.GET.sort == 'oldest' %}selected{% endif %}>Oldest</option>
+                            <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Popular</option>
+                            <option value="subscribers" {% if request.GET.sort == 'subscribers' %}selected{% endif %}>Subscribers</option>
+                            <option value="videos" {% if request.GET.sort == 'videos' %}selected{% endif %}>Videos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn--primary w-full">Filter</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Models grid -->
+            <div class="models-grid">
+                    {% for model in models %}
+                        <div class="model-card">
+                            <a href="{% url 'models:detail' model.slug %}" class="model-link">
+                                <div class="model-avatar">
+                                    {% if model.avatar %}
+                                        <img src="{{ model.avatar.url }}" alt="{{ model.display_name }}" class="img-fluid">
+                                    {% else %}
+                                        <div class="no-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="model-info">
+                                    <h5 class="model-name">{{ model.display_name }}</h5>
+                                    <div class="model-stats">
+                                        <span class="stat">
+                                            <i class="fas fa-eye"></i> {{ model.views_count|floatformat:0 }}K
+                                        </span>
+                                        <span class="stat">
+                                            <i class="fas fa-users"></i> {{ model.subscribers_count }}
+                                        </span>
+                                        <span class="stat">
+                                            <i class="fas fa-video"></i> {{ model.videos_count }}
+                                        </span>
+                                    </div>
+                                    {% if model.country %}
+                                        <div class="model-location">
+                                            <i class="fas fa-map-marker-alt"></i> {{ model.country }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <h3>No models found</h3>
+                            <p>Try changing your search parameters</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Models pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}{% if request.GET.hair_color %}&hair_color={{ request.GET.hair_color }}{% endif %}{% if request.GET.eye_color %}&eye_color={{ request.GET.eye_color }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}{% if request.GET.hair_color %}&hair_color={{ request.GET.hair_color }}{% endif %}{% if request.GET.eye_color %}&eye_color={{ request.GET.eye_color }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}{% if request.GET.hair_color %}&hair_color={{ request.GET.hair_color }}{% endif %}{% if request.GET.eye_color %}&eye_color={{ request.GET.eye_color }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.gender %}&gender={{ request.GET.gender }}{% endif %}{% if request.GET.hair_color %}&hair_color={{ request.GET.hair_color }}{% endif %}{% if request.GET.eye_color %}&eye_color={{ request.GET.eye_color }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+{% endblock %}
+
+
+
+
+
+

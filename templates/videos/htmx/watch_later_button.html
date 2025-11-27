@@ -1,0 +1,12 @@
+{% load static %}
+<div id="wl-btn-{{ video.id }}" class="watch-later-btn{% if active %} active{% endif %}"
+     role="button" aria-label="Watch Later" title="Watch Later"
+     hx-post="{% url 'videos:htmx_watch_later' video.slug %}"
+     hx-headers='{"X-CSRFToken": "{{ request.COOKIES.csrftoken }}"}'
+     hx-target="#wl-btn-{{ video.id }}"
+     hx-swap="outerHTML"
+     hx-on:click="event.preventDefault(); event.stopPropagation();">
+    <i class="fas fa-clock"></i>
+ </div>
+
+

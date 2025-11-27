@@ -1,0 +1,38 @@
+{% load static %}
+{% if banner %}
+<div class="ad-banner" data-banner-id="{{ banner.id }}" data-placement="{{ placement.slug }}">
+    {% if banner.banner_type == 'image' and banner.image %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow">
+            <img src="{{ banner.image.url }}" 
+                 alt="{{ banner.alt_text|default:banner.name }}"
+                 width="{{ placement.width }}"
+                 height="{{ placement.height }}"
+                 class="ad-image">
+        </a>
+    {% elif banner.banner_type == 'video' and banner.video %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow">
+            <video width="{{ placement.width }}" 
+                   height="{{ placement.height }}" 
+                   autoplay muted loop
+                   class="ad-video">
+                <source src="{{ banner.video.url }}" type="video/mp4">
+            </video>
+        </a>
+    {% elif banner.banner_type == 'html' and banner.html_content %}
+        <div class="ad-html">
+            {{ banner.html_content|safe }}
+        </div>
+    {% elif banner.banner_type == 'text' and banner.text_content %}
+        <a href="{% url 'ads:click' banner.id %}" target="_blank" rel="nofollow" class="ad-text-link">
+            <div class="ad-text ad-text-dynamic" style="width: {{ placement.width }}px; height: {{ placement.height }}px;">
+                {{ banner.text_content }}
+            </div>
+        </a>
+    {% endif %}
+    
+    <div class="ad-label">Ads</div>
+</div>
+{% endif %}
+
+
+

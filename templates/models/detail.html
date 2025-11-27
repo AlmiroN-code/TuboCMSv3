@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ model.display_name }} {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        
+        <!-- Main content -->
+        <div class="col-md-9">
+            <!-- Model header -->
+            <div class="model-header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="model-avatar-large">
+                            {% if model.avatar %}
+                                <img src="{{ model.avatar.url }}" alt="{{ model.display_name }}" class="img-fluid">
+                            {% else %}
+                                <div class="no-avatar-large">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="model-info">
+                            <h1 class="model-name">{{ model.display_name }}</h1>
+                            {% if model.is_verified %}
+                                <span class="verified-badge">
+                                    <i class="fas fa-check-circle"></i> Verified
+                                </span>
+                            {% endif %}
+                            
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-number">{{ model.views_count|floatformat:0 }}K</span>
+                                    <span class="stat-label">views</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">{{ model.subscribers_count }}</span>
+                                    <span class="stat-label">subscribers</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">{{ model.videos_count }}</span>
+                                    <span class="stat-label">videos</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">{{ model.likes_count }}</span>
+                                    <span class="stat-label">likes</span>
+                                </div>
+                            </div>
+                            
+                            <div class="model-actions">
+                                {% if user.is_authenticated %}
+                                    {% if is_subscribed %}
+                                        <a href="{% url 'models:unsubscribe' model.slug %}" class="btn btn--outline">
+                                            <i class="fas fa-user-minus"></i> Unsubscribe
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'models:subscribe' model.slug %}" class="btn btn--primary">
+                                            <i class="fas fa-user-plus"></i> Subscribe
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if is_liked %}
+                                        <a href="{% url 'models:unlike' model.slug %}" class="btn btn--outline">
+                                            <i class="fas fa-heart"></i> Remove Like
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'models:like' model.slug %}" class="btn btn--primary">
+                                            <i class="fas fa-heart"></i> Like
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'users:login' %}" class="btn btn--primary">
+                                        <i class="fas fa-sign-in-alt"></i> Log In to Subscribe
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model details -->
+            <div class="model-details">
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- Bio -->
+                        {% if model.bio %}
+                        <div class="bio-section">
+                            <h3>About Model</h3>
+                            <p>{{ model.bio }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Personal info -->
+                        <div class="personal-info">
+                            <h3>Personal Information</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <strong>Gender:</strong> {{ model.get_gender_display }}
+                                    </div>
+                                    {% if model.age %}
+                                    <div class="info-item">
+                                        <strong>Age:</strong> {{ model.age_display }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.birth_date %}
+                                    <div class="info-item">
+                                        <strong>Birth Date:</strong> {{ model.birth_date|date:"d F, Y" }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.country %}
+                                    <div class="info-item">
+                                        <strong>Country:</strong> {{ model.country }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.ethnicity %}
+                                    <div class="info-item">
+                                        <strong>Ethnicity:</strong> {{ model.ethnicity }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if model.career_start %}
+                                    <div class="info-item">
+                                        <strong>Career Start:</strong> {{ model.career_start|date:"Y" }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.zodiac_sign %}
+                                    <div class="info-item">
+                                        <strong>Zodiac Sign:</strong> {{ model.zodiac_sign }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.hair_color %}
+                                    <div class="info-item">
+                                        <strong>Hair Color:</strong> {{ model.get_hair_color_display }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.eye_color %}
+                                    <div class="info-item">
+                                        <strong>Eye Color:</strong> {{ model.get_eye_color_display }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Physical characteristics -->
+                        <div class="physical-info">
+                            <h3>Physical Characteristics</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if model.has_tattoos %}
+                                    <div class="info-item">
+                                        <strong>Tattoos:</strong> Yes
+                                        {% if model.tattoos_description %}
+                                            <br><small>{{ model.tattoos_description }}</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.has_piercings %}
+                                    <div class="info-item">
+                                        <strong>Piercings:</strong> Yes
+                                        {% if model.piercings_description %}
+                                            <br><small>{{ model.piercings_description }}</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.breast_size %}
+                                    <div class="info-item">
+                                        <strong>Breast Size:</strong> {{ model.get_breast_size_display }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.measurements %}
+                                    <div class="info-item">
+                                        <strong>Measurements:</strong> {{ model.measurements }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if model.height %}
+                                    <div class="info-item">
+                                        <strong>Height:</strong> {{ model.height_display }}
+                                    </div>
+                                    {% endif %}
+                                    {% if model.weight %}
+                                    <div class="info-item">
+                                        <strong>Weight:</strong> {{ model.weight_display }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <!-- Cover photo -->
+                        {% if model.cover_photo %}
+                        <div class="cover-photo">
+                            <img src="{{ model.cover_photo.url }}" alt="{{ model.display_name }}" class="img-fluid">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model videos -->
+            <div class="model-videos">
+                <h3>Videos with {{ model.display_name }}</h3>
+                <div class="row">
+                    {% for model_video in model_videos %}
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="video-card">
+                            <a href="{% url 'videos:detail' model_video.video.slug %}" class="video-link">
+                                <div class="video-thumbnail">
+                                    {% if model_video.video.poster %}
+                                        <img src="{{ model_video.video.poster.url }}" alt="{{ model_video.video.title }}" class="img-fluid">
+                                    {% else %}
+                                        <div class="no-thumbnail">
+                                            <i class="fas fa-video"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="video-duration">
+                                        {{ model_video.video.duration|floatformat:0 }}s
+                                    </div>
+                                </div>
+                                <div class="video-info">
+                                    <h5 class="video-title">{{ model_video.video.title }}</h5>
+                                    <div class="video-stats">
+                                        <span class="stat">
+                                            <i class="fas fa-eye"></i> {{ model_video.video.views_count|floatformat:0 }}K
+                                        </span>
+                                        <span class="stat">
+                                            <i class="fas fa-heart"></i> {{ model_video.video.likes_count }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <h4>No videos found</h4>
+                            <p>This model doesn't have videos yet</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination for videos -->
+                {% if model_videos.has_other_pages %}
+                <nav aria-label="Model videos pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if model_videos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ model_videos.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ model_videos.number }} of {{ model_videos.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if model_videos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ model_videos.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

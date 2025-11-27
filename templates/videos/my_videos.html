@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}My Videos {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="my-videos-container">
+    <div class="my-videos-header">
+        <h1>My Videos</h1>
+        <a href="{% url 'videos:upload' %}" class="btn btn--primary">
+            <i class="fas fa-plus"></i>
+            Upload Video
+        </a>
+    </div>
+    
+    <div class="my-videos-content">
+        {% if videos %}
+            <div class="video-grid">
+                {% for video in videos %}
+                    <div class="video-card">
+                        <a href="{% url 'videos:detail' video.slug %}">
+                            <div class="thumbnail">
+                                {% if video.preview %}
+                                    <video src="{{ video.preview.url }}" alt="{{ video.title }}" loading="lazy" muted></video>
+                                {% else %}
+                                    <div class="poster-placeholder"></div>
+                                {% endif %}
+                                <span class="duration">{{ video.duration|format_duration }}</span>
+                                {% if video.status == 'processing' %}
+                                    <div class="processing-overlay">
+                                        <i class="fas fa-cog fa-spin"></i>
+                                        <span>Processing...</span>
+                                    </div>
+                                {% elif video.status == 'draft' %}
+                                    <div class="draft-overlay">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Draft</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <div class="video-info">
+                            <div class="video-details">
+                                <div class="video-title">{{ video.title|truncate_text:50 }}</div>
+                                <div class="video-meta">
+                                    <span>{{ video.views_count|format_views }} views</span>
+                                    <span>{{ video.created_at|time_ago }}</span>
+                                </div>
+                                <div class="video-status">
+                                    <span class="status-badge status-{{ video.status }}">
+                                        {% if video.status == 'published' %}Published
+                                        {% elif video.status == 'draft' %}Draft
+                                        {% elif video.status == 'processing' %}Processing
+                                        {% elif video.status == 'private' %}Private
+                                        {% else %}{{ video.get_status_display }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="video-actions">
+                                <a href="{% url 'videos:edit' video.slug %}" class="action-btn edit-btn" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'videos:delete' video.slug %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Delete video?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if videos.has_other_pages %}
+                {% include 'partials/pagination.html' %}
+            {% endif %}
+        {% else %}
+            <div class="no-content">
+                <i class="fas fa-video"></i>
+                <h3>You don't have videos yet</h3>
+                <p>Upload your first video and share it with the world!</p>
+                <a href="{% url 'videos:upload' %}" class="btn btn--primary">Upload Video</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+

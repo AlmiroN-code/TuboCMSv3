@@ -1,0 +1,35 @@
+{% load ads_tags %}
+<aside class="sidebar">
+	<div class="sidebar-section">
+		<ul>
+			<li><a href="{% url 'core:search' %}?sort=trending" class="{% if request.resolver_match.url_name == 'search' and request.GET.sort == 'trending' %}active{% endif %}"><i class="fas fa-fire"></i> Trends</a></li>
+			<li><a href="{% url 'core:community' %}" class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}"><i class="fas fa-users"></i> Community</a></li>
+			
+		</ul>
+	</div>
+	<div class="separator"></div>
+	<div class="sidebar-section">
+		<ul id="categories-list" class="categories-list">
+			{% for category in categories %}
+				{% if category.slug %}<li class="category-item{% if forloop.counter > 10 %} hidden-category{% endif %}"><a href="{% url 'category:videos' category.slug %}" class="{% if request.resolver_match.url_name == 'videos' and request.resolver_match.kwargs.slug == category.slug %}active{% endif %}"><i class="fas fa-{{ category.icon|default:'tag' }}"></i> {{ category.name }}</a></li>{% endif %}
+			{% endfor %}
+		</ul>
+        <button id="expand-btn" class="btn btn-dark btn--sm btn--full">Expand</button>
+        <button id="collapse-btn" class="btn btn-dark btn--sm btn--full" style="display:none;">Collapse</button>
+	</div>
+	{% if user.is_authenticated %}
+
+	{% if user.model_profile %}
+	<div class="sidebar-section">
+		<h3>Porn Model</h3>
+		<ul>
+			<li><a href="{% url 'models:detail' user.model_profile.slug %}" class="{% if request.resolver_match.url_name == 'detail' and request.resolver_match.kwargs.slug == user.model_profile.slug %}active{% endif %}"><i class="fas fa-user"></i> My profile</a></li>
+			<li><a href="{% url 'admin:videos_video_add' %}" class="{% if request.resolver_match.url_name == 'videos_video_add' %}active{% endif %}"><i class="fas fa-plus"></i> Add video</a></li>
+			<li><a href="{% url 'admin:models_model_change' user.model_profile.id %}" class="{% if request.resolver_match.url_name == 'models_model_change' and request.resolver_match.kwargs.object_id == user.model_profile.id|stringformat:'s' %}active{% endif %}"><i class="fas fa-edit"></i> Edit Profile</a></li>
+		</ul>
+	</div>
+	{% endif %}
+
+	{% endif %}
+	{% ad_banner 'sidebar-banner' request %}
+</aside>

@@ -1,0 +1,342 @@
+{% load static %}
+{% load core_tags %}
+{% load ads_tags %}
+{% load i18n %}
+{% load custom_i18n %}
+<!DOCTYPE html>
+<html lang="{% current_language %}"
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if site_settings.site_favicon %}<link rel="icon" type="image/png" href="{{ site_settings.site_favicon.url }}">{% endif %}
+    <title>{% block title %}{% if seo_settings.meta_title %}{{ seo_settings.meta_title }} {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% else %}{% if site_settings.add_site_name_to_title %}{{ site_settings.site_name }} - {% endif %}{% block page_title %}Video Hosting{% endblock %}{% endif %}{% endblock %}</title>
+    {% if seo_settings %}{% if seo_settings.meta_description %}<meta name="description" content="{{ seo_settings.meta_description }}">{% endif %}
+        {% if seo_settings.meta_keywords %} <meta name="keywords" content="{{ seo_settings.meta_keywords }}">{% endif %}
+        {% if seo_settings.og_title %}<meta property="og:title" content="{{ seo_settings.og_title }}">{% endif %}
+        {% if seo_settings.og_description %}<meta property="og:description" content="{{ seo_settings.og_description }}">{% endif %}
+        {% if seo_settings.og_image %}<meta property="og:image" content="{% absolute_url seo_settings.og_image.url %}">{% endif %}
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{% absolute_url request.path %}">
+        <meta name="twitter:card" content="{{ seo_settings.twitter_card|default:'summary_large_image' }}">{% if seo_settings.twitter_site %}<meta name="twitter:site" content="{{ seo_settings.twitter_site }}">{% endif %}{% if seo_settings.twitter_creator %}<meta name="twitter:creator" content="{{ seo_settings.twitter_creator }}">{% endif %}{% endif %}
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/quantum.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if theme == 'light' %}light-theme{% else %}dark-theme{% endif %}">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo"><a href="{% url 'core:home' %}">{% if site_settings.site_logo %}<img src="{{ site_settings.site_logo.url }}" alt="{% get_site_setting 'site_name' %}" class="logo-image">{% else %}<i class="fas fa-play-circle logo-icon"></i><h1>{% get_site_setting 'site_name' %}</h1>{% endif %}</a></div>
+                <div class="search-bar">
+                    <form method="GET" action="{% url 'core:search' %}" class="search-form">
+                        <div class="search-input-wrapper">
+                            <input type="text" name="q" placeholder="{% trans_custom 'Search...' %}" value="{{ request.GET.q }}"
+                                   hx-get="{% url 'core:search_dropdown' %}"
+                                   hx-target="#search-dropdown-results"
+                                   hx-trigger="keyup changed delay:500ms, input changed delay:500ms"
+                                   hx-swap="innerHTML"
+                                   hx-indicator="#search-loading"
+                                   autocomplete="off">
+                            <i class="fas fa-search search-icon"></i>
+                            <div id="search-loading" class="htmx-indicator"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                        <div id="search-dropdown-results" class="search-dropdown-results"></div>
+                    </form>
+                </div>
+                <div class="account-controls">
+                    {% if user.is_authenticated %}
+                        <!-- Language Selector -->
+                        <div class="lang-selector">
+                            <button class="lang-toggle" id="langToggle" title="{% trans_custom 'Change Language' %}">
+                                <i class="flag flag-{{ LANGUAGE_CODE }}"></i>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="lang-dropdown" id="langDropdown">
+                                <button class="lang-dropdown-item" data-lang="en">
+                                    <i class="flag flag-en"></i> English
+                                </button>
+                                <button class="lang-dropdown-item" data-lang="ru">
+                                    <i class="flag flag-ru"></i> Русский
+                                </button>
+                            </div>
+                        </div>
+                        <div class="upload-btn">
+                            <a href="{% url 'videos:upload' %}" title="{% trans_custom 'Upload video' %}"><i class="fas fa-video"></i> {% trans_custom 'Upload' %}</a>
+                        </div>
+                        <!-- Notifications -->
+                        <div class="notifications-container">
+                            <button class="notifications-btn" title="{% trans 'Notifications' %}" hx-get="{% url 'users:notifications_dropdown' %}" hx-target="#notifications-dropdown" hx-swap="innerHTML" hx-trigger="click" onclick="toggleNotifications(event)">
+                                <i class="fas fa-bell"></i>
+                                <div id="notifications-count" hx-get="{% url 'users:notifications_count' %}" hx-trigger="load, every 30s" x-swap="innerHTML"></div>
+                            </button>
+                            <div id="notifications-dropdown" class="notifications-dropdown-container"></div>
+                        </div>
+                        <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}"><i class="fas fa-moon"></i></button>
+                        <div class="account-dropdown">
+                            <a href="{% url 'members:profile' username=user.username %}" class="user-avatar" title="{% trans_custom 'Profile' %}">
+                                {% if user.avatar %}
+                                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar-img-32">
+                                {% else %}
+                                    <div class="avatar-placeholder-32">{% get_avatar_initial user %}</div>
+                                {% endif %}
+                            </a>
+                            <div class="account-menu">
+                                <a href="{% url 'members:profile' username=user.username %}" class="account-menu-item"><i class="fas fa-user"></i> {% trans_custom 'My Profile' %}</a>
+                                <a href="{% url 'members:edit_profile' username=user.username %}" class="account-menu-item"><i class="fas fa-edit"></i> {% trans_custom 'Edit Profile' %}</a>
+                                <div class="separator"></div>
+                                <a href="{% url 'videos:public_playlists' %}" class="account-menu-item"><i class="fas fa-list"></i> {% trans 'Playlists' %}</a>
+			                    <a href="{% url 'members:favorites' username=user.username %}" class="account-menu-item"><i class="fas fa-heart"></i> {% trans 'Favorites' %}{% if user.favorites.count > 0 %} <span class="count-badge">{{ user.favorites.count }}</span>{% endif %}</a>
+			                    <a href="{% url 'members:watch_later' username=user.username %}" class="account-menu-item"><i class="fas fa-clock"></i> {% trans 'Watch Later' %}{% if user.watch_later.count > 0 %} <span class="count-badge">{{ user.watch_later.count }}</span>{% endif %}</a>
+                                <a href="{% url 'members:subscriptions' username=user.username %}" class="account-menu-item"><i class="fas fa-users"></i> {% trans 'Subscriptions' %}</a>
+                                <a href="{% url 'members:notifications' username=user.username %}" class="account-menu-item"><i class="fas fa-bell"></i> {% trans 'Notifications' %}</a>
+                                {% if user.is_staff or user.is_superuser %}
+                                <a href="{% url 'admin:index' %}" target="_blank" class="account-menu-item"><i class="fas fa-shield-alt"></i> {% trans 'Admin Panel' %}</a>
+                                {% endif %}
+                                <a href="{% url 'users:logout' %}" class="account-menu-item"><i class="fas fa-sign-out-alt"></i> {% trans 'Logout' %}</a>
+                            </div>
+                        </div>
+                        <a href="{% url 'users:logout' %}" title="{% trans 'Logout' %}"><i class="fas fa-sign-out-alt"></i></a>
+                    {% else %}
+
+                    <!-- Language Selector -->
+                    <div class="lang-selector">
+                        <button class="lang-toggle" id="langToggleGuest" title="{% trans_custom 'Change Language' %}">
+                            <i class="flag flag-{{ LANGUAGE_CODE }}"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="lang-dropdown" id="langDropdownGuest">
+                            <button class="lang-dropdown-item" data-lang="en">
+                                <i class="flag flag-en"></i> English
+                            </button>
+                            <button class="lang-dropdown-item" data-lang="ru">
+                                <i class="flag flag-ru"></i> Русский
+                            </button>
+                        </div>
+                    </div>
+                    <button class="theme-toggle" id="themeToggle" title="{% trans 'Toggle theme' %}"><i class="fas fa-moon"></i></button>
+                <div class="btn-group">
+                    <a href="{% url 'users:login' %}" class="btn btn--primary"><i class="fas fa-sign-in-alt"></i> {% trans 'Login' %}</a>
+                    <a href="{% url 'users:register' %}" class="btn btn-dark btn--sm"><i class="fas fa-user-plus"></i> {% trans 'Register' %}</a>
+                </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <nav>
+            <div class="container nav-container">
+                <div class="left-nav">
+                    <a href="{% url 'core:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home"></i> {% trans 'Home' %}</a>
+                    <a href="{% url 'videos:list' %}" class="nav-item {% if request.resolver_match.url_name == 'videos' %}active{% endif %}"><i class="fas fa-video"></i> {% trans 'Videos' %}</a>
+                    <a href="{% url 'core:categories' %}" class="nav-item {% if request.resolver_match.url_name == 'categories' %}active{% endif %}"><i class="fas fa-folder"></i> {% trans 'Categories' %}</a>
+                    <a href="{% url 'models:list' %}" class="nav-item {% if request.resolver_match.url_name == 'list' %}active{% endif %}"><i class="fas fa-users"></i> {% trans 'Pornstars' %}</a>
+                </div>
+                <div class="right-nav">
+                    <a href="{% url 'core:search' %}?sort=popular" class="nav-item {% if request.resolver_match.url_name == 'search' and request.GET.sort == 'popular' %}active{% endif %}">{% trans 'Popular' %}</a>
+                    <a href="{% url 'core:search' %}?sort=trending" class="nav-item {% if request.resolver_match.url_name == 'search' and request.GET.sort == 'trending' %}active{% endif %}">{% trans 'Trends' %}</a>
+                </div> 
+            </div>
+        </nav>
+    </header>
+    <div class="container"><div class="main-content">{% include 'partials/sidebar.html' %}<main class="content">{% if messages %}<div class="messages">{% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% block content %}{% endblock %}</main></div></div>
+
+    <!-- Modal container for HTMX modals -->
+    <div id="modal-container"></div>
+    <div class="footer-ads"><div class="container">{% ad_banner 'footer-banner' request %}</div></div>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>{% trans 'About Us' %}</h3>
+                    <ul>
+                        <li><a href="#">{% trans 'About Company' %}</a></li>
+                        <li><a href="#">{% trans 'Press' %}</a></li>
+                        <li><a href="#">{% trans 'Careers' %}</a></li>
+                        <li><a href="#">{% trans 'Contact' %}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>{% trans 'For Creators' %}</h3>
+                    <ul>
+                        <li><a href="#">{% trans 'TubeCMS for Authors' %}</a></li>
+                        <li><a href="#">{% trans 'Monetization' %}</a></li>
+                        <li><a href="#">{% trans 'Partner Program' %}</a></li>
+                        <li><a href="#">{% trans 'Creative Studios' %}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>{% trans 'Help' %}</h3>
+                    <ul>
+                        <li><a href="#">{% trans 'Support Center' %}</a></li>
+                        <li><a href="#">{% trans 'Community' %}</a></li>
+                        <li><a href="#">{% trans 'Rules' %}</a></li>
+                        <li><a href="#">{% trans 'Security' %}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section"><h3>{% trans 'Follow Us' %}</h3>{% social_links %}</div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2025 {% get_site_setting 'site_name' %}. {% trans 'All rights reserved.' %}</p></div>
+        </div>
+    </footer>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JavaScript -->
+    <script src="{% static 'js/htmx-handlers.js' %}"></script>
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Check saved theme in localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.className = savedTheme;
+            updateThemeIcon(savedTheme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light-theme');
+                updateThemeIcon('light-theme');
+            } else {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark-theme');
+                updateThemeIcon('dark-theme');
+            }
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'light-theme') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+    <!-- Analytics Scripts -->
+    {% if seo_settings %}
+        <!-- Google Analytics -->
+        {% if seo_settings.google_analytics_id %}
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ seo_settings.google_analytics_id }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '{{ seo_settings.google_analytics_id }}');
+            </script>
+        {% endif %}
+
+        <!-- Google Tag Manager -->
+        {% if seo_settings.google_tag_manager_id %}
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','{{ seo_settings.google_tag_manager_id }}');</script>
+        {% endif %}
+
+        <!-- Yandex Metrica -->
+        {% if seo_settings.yandex_metrica_id %}
+            <script type="text/javascript">
+                (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+                (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+                ym({{ seo_settings.yandex_metrica_id }}, "init", {
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            </script>
+            <noscript><div><img src="https://mc.yandex.ru/watch/{{ seo_settings.yandex_metrica_id }}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        {% endif %}
+
+        <!-- Facebook Pixel -->
+        {% if seo_settings.facebook_pixel_id %}
+            <script>
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '{{ seo_settings.facebook_pixel_id }}');
+                fbq('track', 'PageView');
+            </script>
+            <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ seo_settings.facebook_pixel_id }}&ev=PageView&noscript=1"/></noscript>
+        {% endif %}
+
+        <!-- VK Pixel -->
+        {% if seo_settings.vk_pixel_id %}
+            <script type="text/javascript">!function(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://vk.com/js/api/openapi.js?169",t.onload=function(){VK.Retargeting.Init("{{ seo_settings.vk_pixel_id }}"),VK.Retargeting.Hit()},document.head.appendChild(t)}();</script>
+            <noscript><img src="https://vk.com/rtrg?p={{ seo_settings.vk_pixel_id }}" style="position:fixed; left:-9999px;" alt=""/></noscript>
+        {% endif %}
+    {% endif %}
+
+    <script>
+    // Notifications functionality
+    function toggleNotifications(event) {
+        event.preventDefault();
+        const dropdown = document.getElementById('notifications-dropdown');
+        const isVisible = dropdown.style.display === 'block';
+
+        if (isVisible) {
+            dropdown.style.display = 'none';
+        } else {
+            dropdown.style.display = 'block';
+        }
+    }
+
+    // Close notifications dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const notificationsContainer = document.querySelector('.notifications-container');
+        const dropdown = document.getElementById('notifications-dropdown');
+
+        if (notificationsContainer && !notificationsContainer.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Mark notification as read when clicked
+    document.addEventListener('click', function(event) {
+        const notificationItem = event.target.closest('.notification-item');
+        if (notificationItem && !notificationItem.classList.contains('read')) {
+            const notificationId = notificationItem.dataset.notificationId;
+            if (notificationId) {
+                fetch(`/users/notifications/${notificationId}/read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                                      document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '',
+                        'Content-Type': 'application/json',
+                    }
+                }).then(() => {
+                    notificationItem.classList.add('read');
+                    notificationItem.classList.remove('unread');
+
+                    // Update notification count
+                    htmx.trigger('#notifications-count', 'load');
+                });
+            }
+        }
+    });
+    </script>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal-overlay"></div>
+</body>
+</html>

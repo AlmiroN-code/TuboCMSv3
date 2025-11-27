@@ -1,0 +1,7 @@
+{% if stats %}
+<span class="rating-emoji-only" title="Overall sentiment: {% if stats.likes_percent >= 70 %}Excellent{% elif stats.likes_percent >= 30 %}Normal{% else %}Poor{% endif %}">
+    {{ stats.emoji }}
+</span>
+{% endif %}
+
+

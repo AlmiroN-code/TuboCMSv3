@@ -1,0 +1,40 @@
+<div class="processing-status">
+    {% if video.processing_status == 'pending' %}
+        <div class="status pending">
+            <i class="fas fa-clock"></i>
+            <span>Waiting for processing...</span>
+        </div>
+    {% elif video.processing_status == 'processing' %}
+        <div class="status processing">
+            <i class="fas fa-cog fa-spin"></i>
+            <span>Processing video... {{ video.processing_progress }}%</span>
+            <div class="processing-progress-bar">
+                <div class="processing-progress-fill" style="width: {{ video.processing_progress }}%"></div>
+            </div>
+        </div>
+    {% elif video.processing_status == 'completed' %}
+        <div class="status completed">
+            <i class="fas fa-check-circle"></i>
+            <span>Processing completed!</span>
+        </div>
+    {% elif video.processing_status == 'failed' %}
+        <div class="status failed">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Processing error</span>
+            {% if video.processing_error %}
+                <p class="error-message">{{ video.processing_error }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+
+
+
+
+
+
+
+
+
+

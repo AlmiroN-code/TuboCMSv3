@@ -1,0 +1,10 @@
+{% if stats %}
+<div class="rating-progress-only">
+    <div class="rating-progress-bar">
+        <div class="rating-progress-likes" style="width: {{ stats.likes_percent }}%" title="{{ stats.likes }} likes"></div>
+        <div class="rating-progress-dislikes" style="width: {{ stats.dislikes_percent }}%" title="{{ stats.dislikes }} dislikes"></div>
+    </div>
+</div>
+{% endif %}
+
+

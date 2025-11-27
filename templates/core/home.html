@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+
+{% block content %}
+<div id="search-results">
+    <h2>Featured Videos</h2>
+    
+    {% if featured_videos %}
+        <div class="section">
+            <h3>Featured</h3>
+            <div class="video-grid">
+                {% for video in featured_videos %}
+                    {% include 'partials/video_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <div class="section">
+        <h3>New Videos</h3>
+        <div class="video-grid">
+            {% for video in recent_videos %}
+                {% include 'partials/video_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

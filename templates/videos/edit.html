@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Video - TubeCMS{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <div class="edit-form">
+        <h2>Edit Video</h2>
+        
+        <div class="video-preview">
+            <div class="preview-thumbnail">
+                {% if video.preview %}
+                    <video src="{{ video.preview.url }}" alt="{{ video.title }}" controls>
+                {% else %}
+                    <div class="thumbnail-placeholder">
+                        <i class="fas fa-video"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="preview-info">
+                <h4>{{ video.title }}</h4>
+                <p>{{ video.views_count|format_views }} views</p>
+                <p>{{ video.created_at|time_ago }}</p>
+            </div>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Video Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-errors">
+                        {% for error in form.title.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-errors">
+                        {% for error in form.description.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="form-errors">
+                        {% for error in form.category.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="tags-input">Tags</label>
+                {{ form.tags_input }}
+                {{ form.tags }} {# Hidden field #}
+                {% if form.tags_input.errors %}
+                    <div class="form-errors">
+                        {% for error in form.tags_input.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div id="tag-autocomplete-results" class="tag-autocomplete-results"></div>
+                <div id="selected-tags" class="selected-tags"></div>
+                <small class="form-help">Enter tags separated by commas. You can select from suggested tags while typing.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                    <div class="form-errors">
+                        {% for error in form.status.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    {{ form.is_premium }}
+                    <span class="checkmark"></span>
+                    Premium content
+                </label>
+                {% if form.is_premium.errors %}
+                    <div class="form-errors">
+                        {% for error in form.is_premium.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save Changes</button>
+                <a href="{% url 'videos:detail' video.slug %}" class="btn btn--secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Tag management
+let selectedTags = new Set();
+
+function addTag(tagId, tagName) {
+    if (!selectedTags.has(tagName)) {
+        selectedTags.add(tagName);
+        updateSelectedTagsDisplay();
+        updateTagsInput();
+    }
+    document.getElementById('tag-autocomplete-results').innerHTML = '';
+    document.getElementById('tags-input').value = '';
+}
+
+function removeTag(tagName) {
+    selectedTags.delete(tagName);
+    updateSelectedTagsDisplay();
+    updateTagsInput();
+}
+
+function updateSelectedTagsDisplay() {
+    const container = document.getElementById('selected-tags');
+    if (!container) return;
+    container.innerHTML = '';
+    selectedTags.forEach(tagName => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'selected-tag-item';
+        tagEl.innerHTML = `${tagName} <span class="tag-remove" onclick="removeTag('${tagName}')">×</span>`;
+        container.appendChild(tagEl);
+    });
+}
+
+function updateTagsInput() {
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        tagsInput.value = Array.from(selectedTags).join(', ');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        // Initialize selected tags from existing
+        const existingTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+        existingTags.forEach(tag => selectedTags.add(tag));
+        updateSelectedTagsDisplay();
+        
+        // Handle Enter or comma key press
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === ',' || e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.value.trim();
+                if (value) {
+                    const tags = value.split(',').map(t => t.trim()).filter(t => t);
+                    tags.forEach(tag => {
+                        if (!selectedTags.has(tag)) {
+                            selectedTags.add(tag);
+                        }
+                    });
+                    updateSelectedTagsDisplay();
+                    updateTagsInput();
+                    this.value = '';
+                    const results = document.getElementById('tag-autocomplete-results');
+                    if (results) results.innerHTML = '';
+                }
+            }
+        });
+        
+        // Handle click on autocomplete items
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tag-autocomplete-item')) {
+                const tagName = e.target.getAttribute('data-tag-name');
+                const tagId = e.target.getAttribute('data-tag-id');
+                if (tagName) {
+                    addTag(tagId, tagName);
+                }
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}
+

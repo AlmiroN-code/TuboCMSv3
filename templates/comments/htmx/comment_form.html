@@ -1,0 +1,39 @@
+{% if user.is_authenticated %}
+<form {% if parent %}hx-post="{% url 'comments:htmx_reply_create' video.slug parent.id %}"{% else %}hx-post="{% url 'comments:htmx_create' video.slug %}"{% endif %}
+      hx-target="#comments-list" 
+      hx-swap="afterbegin"
+      hx-indicator=".htmx-indicator"
+      class="comment-form">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <textarea name="content" 
+                  placeholder="{% if parent %}Reply to comment...{% else %}Add a comment...{% endif %}" 
+                  required
+                  class="form-control"
+                  rows="3"></textarea>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn-text">{% if parent %}Reply{% else %}Comment{% endif %}</span>
+            <span class="htmx-indicator">
+                <i class="fas fa-spinner fa-spin"></i>
+            </span>
+        </button>
+        {% if parent %}
+            <button type="button" class="btn btn--secondary btn--sm" 
+                    hx-get="{% url 'comments:htmx_form' video.slug %}"
+                    hx-target="#comment-form-container"
+                    hx-swap="innerHTML">
+                Cancel
+            </button>
+        {% endif %}
+    </div>
+</form>
+{% else %}
+<div class="login-prompt">
+    <p>Log in to leave a comment</p>
+    <a href="{% url 'users:login' %}" class="btn btn--primary">Log In</a>
+</div>
+{% endif %}

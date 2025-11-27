@@ -1,0 +1,64 @@
+{% load core_tags %}
+<div class="replies-list">
+    {% for reply in replies %}
+        <div class="reply-item">
+            <div class="reply-header">
+                <div class="reply-author">
+                    <div class="reply-avatar">
+                        {% get_avatar_initial reply.user %}
+                    </div>
+                    <div class="reply-info">
+                        <span class="author-name">{{ reply.user.display_name }}</span>
+                        <span class="reply-date">{{ reply.created_at|time_ago }}</span>
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <div class="reply-actions">
+                        <button class="reply-action-btn" 
+                                hx-get="{% url 'comments:htmx_likes' reply.id %}"
+                                hx-target="#reply-likes-{{ reply.id }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>{{ reply.likes_count }}</span>
+                        </button>
+                        
+                        {% if user == reply.user %}
+                            <button class="reply-action-btn edit-btn"
+                                    hx-get="{% url 'comments:htmx_edit_form' reply.id %}"
+                                    hx-target="#reply-edit-{{ reply.id }}"
+                                    hx-swap="outerHTML">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            
+                            <button class="reply-action-btn delete-btn"
+                                    hx-post="{% url 'comments:delete' reply.id %}"
+                                    hx-target="#reply-{{ reply.id }}"
+                                    hx-swap="outerHTML"
+                                    hx-confirm="Delete reply?">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        {% else %}
+                            <button class="reply-action-btn report-btn"
+                                    hx-get="{% url 'comments:htmx_report_form' reply.id %}"
+                                    hx-target="body"
+                                    hx-swap="beforeend">
+                                <i class="fas fa-flag"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="reply-content">
+                <div id="reply-edit-{{ reply.id }}">
+                    <p>{{ reply.content|linebreaks }}</p>
+                </div>
+                
+                <div id="reply-likes-{{ reply.id }}">
+                    {% include 'comments/htmx/comment_likes.html' with comment=reply %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

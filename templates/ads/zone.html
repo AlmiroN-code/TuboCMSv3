@@ -1,0 +1,18 @@
+{% load static %}
+
+{% if zone and banners %}
+<div class="ad-zone" data-zone="{{ zone.slug }}">
+    <div class="ad-zone-header">
+        <span class="ad-zone-label">{{ zone.name }}</span>
+    </div>
+    
+    <div class="ad-zone-content">
+        {% for banner in banners %}
+            {% include 'ads/banner.html' with banner=banner placement=banner.placement %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+

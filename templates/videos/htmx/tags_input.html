@@ -1,0 +1,103 @@
+<div class="tags-input-wrapper" style="position: relative;">
+    <input type="text" 
+           name="tags_input" 
+           id="tags-input" 
+           class="form-control"
+           placeholder="Enter tags separated by commas or select from list"
+           value="{{ initial_tags|default:'' }}"
+           hx-get="{% url 'core:tag_autocomplete' %}"
+           hx-trigger="keyup changed delay:300ms"
+           hx-target="#tag-autocomplete-results"
+           hx-swap="innerHTML"
+           autocomplete="off">
+    <div id="tag-autocomplete-results" class="tag-autocomplete-results"></div>
+    <div id="selected-tags" class="selected-tags">
+        {% if initial_tags %}
+            {% for tag_name in initial_tags %}
+                <span class="selected-tag-item" data-tag-name="{{ tag_name }}">
+                    {{ tag_name }}
+                    <span class="tag-remove" onclick="removeTag('{{ tag_name }}')">×</span>
+                </span>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <input type="hidden" name="tags" id="id_tags" value="">
+</div>
+
+<script>
+let selectedTags = new Set({{ initial_tags|default:'[]'|safe }});
+
+function addTag(tagId, tagName) {
+    if (!selectedTags.has(tagName)) {
+        selectedTags.add(tagName);
+        updateSelectedTags();
+        updateHiddenField();
+        document.getElementById('tags-input').value = '';
+        document.getElementById('tag-autocomplete-results').innerHTML = '';
+    }
+}
+
+function removeTag(tagName) {
+    selectedTags.delete(tagName);
+    updateSelectedTags();
+    updateHiddenField();
+}
+
+function updateSelectedTags() {
+    const container = document.getElementById('selected-tags');
+    container.innerHTML = '';
+    selectedTags.forEach(tagName => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'selected-tag-item';
+        tagEl.setAttribute('data-tag-name', tagName);
+        tagEl.innerHTML = `${tagName} <span class="tag-remove" onclick="removeTag('${tagName}')">×</span>`;
+        container.appendChild(tagEl);
+    });
+}
+
+function updateHiddenField() {
+    // Update hidden field with selected tags
+    const tagsArray = Array.from(selectedTags);
+    // Format as comma-separated string for form submission
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        tagsInput.dataset.selectedTags = tagsArray.join(',');
+    }
+}
+
+// Handle comma input
+document.addEventListener('DOMContentLoaded', function() {
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === ',' || e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.value.trim();
+                if (value) {
+                    const tags = value.split(',').map(t => t.trim()).filter(t => t);
+                    tags.forEach(tag => {
+                        if (!selectedTags.has(tag)) {
+                            selectedTags.add(tag);
+                        }
+                    });
+                    updateSelectedTags();
+                    updateHiddenField();
+                    this.value = '';
+                    document.getElementById('tag-autocomplete-results').innerHTML = '';
+                }
+            }
+        });
+    }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+

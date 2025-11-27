@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+{% load i18n %}
+
+{% block title %}{{ profile_user.display_name }} {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if profile_user.avatar %}
+                <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.display_name }}">
+            {% else %}
+                <div class="avatar-placeholder">
+                    {% get_avatar_initial profile_user %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <h1>{{ profile_user.display_name }}</h1>
+
+            <!-- Profile Stats -->
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ profile_user.videos_count }}</span>
+                    <span class="stat-label">{% trans 'Views' %}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ profile_user.subscribers_count }}</span>
+                    <span class="stat-label">{% trans 'Subscribers' %}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ profile_user.total_views|format_views }}</span>
+                    <span class="stat-label">{% trans 'Videos' %}</span>
+                </div>
+            </div>
+            {% if profile_user.bio %}
+                        <p>{{ profile_user.bio|linebreaks }}</p>
+                    {% else %}
+                        <p>{% trans 'User information is not provided.' %}</p>
+                    {% endif %}
+            <!-- Country -->
+            {% if profile_user.profile.country %}
+                <div class="profile-country">
+                    <span>{% trans 'Country' %}: {{ profile_user.profile.country }}</span>
+                </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="profile-actions btn-group">
+                {% if user.is_authenticated and user != profile_user %}
+                    <button class="btn btn--md btn--primary subscribe-btn"
+                            hx-post="{% url 'members:subscribe' username=profile_user.username %}"
+                            hx-swap="none"
+                            hx-indicator=".subscribe-btn">
+                        {% if is_subscribed %}{% trans 'Unsubscribe' %}{% else %}{% trans 'Subscribe' %}{% endif %}
+                    </button>
+
+                    <button class="btn btn--secondary edit-btn">
+                        {% trans 'Edit' %}
+                    </button>
+
+                    <!-- Friend Request Button -->
+                    <div id="friend-btn-{{ profile_user.id }}" class="friend-button-container btn">
+                        {% if friendship_status == 'pending' %}
+                            {% if friendship_obj.from_user == user %}
+                                <button class="btn btn--secondary" disabled>
+                                    <i class="fas fa-clock"></i> {% trans 'Request sent' %}
+                                </button>
+                            {% else %}
+                                <button class="btn btn--accent"
+                                        hx-post="{% url 'members:accept_friend_request' username=profile_user.username %}"
+                                        hx-target="#friend-btn-{{ profile_user.id }}"
+                                        hx-swap="innerHTML"
+                                        hx-indicator="#friend-btn-{{ profile_user.id }}">
+                                    <i class="fas fa-check"></i> {% trans 'Accept' %}
+                                </button>
+                                <button class="btn btn--primary"
+                                        hx-post="{% url 'members:decline_friend_request' username=profile_user.username %}"
+                                        hx-target="#friend-btn-{{ profile_user.id }}"
+                                        hx-swap="innerHTML"
+                                        hx-indicator="#friend-btn-{{ profile_user.id }}">
+                                    <i class="fas fa-times"></i> {% trans 'Decline' %}
+                                </button>
+                            {% endif %}
+                        {% elif friendship_status == 'accepted' %}
+                            <button class="btn btn--primary"
+                                    hx-post="{% url 'members:remove_friend' username=profile_user.username %}"
+                                    hx-target="#friend-btn-{{ profile_user.id }}"
+                                    hx-swap="innerHTML"
+                                    hx-confirm="{% trans 'Remove from friends?' %}"
+                                    hx-indicator="#friend-btn-{{ profile_user.id }}">
+                                <i class="fas fa-user-minus"></i> {% trans 'Remove from friends' %}
+                            </button>
+                        {% else %}
+                            <button class="btn btn--primary"
+                                    hx-post="{% url 'members:send_friend_request' username=profile_user.username %}"
+                                    hx-swap="none"
+                                    hx-indicator="#friend-btn-{{ profile_user.id }}">
+                                <i class="fas fa-user-plus"></i> {% trans 'Add to friends' %}
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if user == profile_user %}
+                    <a href="{% url 'members:settings' username=user.username %}" class="btn btn--secondary">
+                        {% trans 'Settings' %}
+                    </a>
+                    <a href="{% url 'members:edit_profile' username=user.username %}" class="btn btn--secondary">
+                        {% trans 'Edit Profile' %}
+                    </a>
+                    <button class="btn btn--primary">
+                        {% trans 'Create playlist' %}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Navigation Tabs -->
+    <div class="profile-nav">
+        <nav class="profile-tabs">
+            <a href="{% url 'members:videos' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'videos' %}active{% endif %}">
+                {% trans 'Videos' %}
+            </a>
+            <a href="{% url 'members:favorites' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'favorites' %}active{% endif %}">
+                {% trans 'Favorites' %}
+            </a>
+            <a href="{% url 'members:watch_later' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'watch_later' %}active{% endif %}">
+                {% trans 'Watch Later' %}
+            </a>
+            {% if user == profile_user %}
+            <a href="{% url 'members:subscriptions' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'subscriptions' %}active{% endif %}">
+                {% trans 'Subscriptions' %}
+            </a>
+            {% endif %}
+            <a href="{% url 'members:playlists' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'playlists' %}active{% endif %}">
+                {% trans 'Playlists' %}
+            </a>
+            <a href="{% url 'members:friends' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'friends' %}active{% endif %}">
+                {% trans 'Friends' %}
+            </a>
+            {% if user == profile_user %}
+            <a href="{% url 'members:notifications' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'notifications' %}active{% endif %}">
+                {% trans 'Notifications' %}
+            </a>
+            {% endif %}
+            <a href="{% url 'members:about' username=profile_user.username %}"
+               class="tab-link {% if current_tab == 'about' %}active{% endif %}">
+                {% trans 'About' %} {{ profile_user.display_name }}
+            </a>
+        </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="profile-content">
+        {% if current_tab == 'videos' %}
+            <div class="tab-content-videos">
+                {% if can_view_content %}
+                    {% if page_obj %}
+                        <div class="video-grid">
+                            {% for video in page_obj %}
+                                {% include 'partials/video_card.html' %}
+                            {% endfor %}
+                        </div>
+
+                        {% if page_obj.has_other_pages %}
+                            {% include 'partials/pagination.html' with page_obj=page_obj %}
+                        {% endif %}
+                    {% else %}
+                        <div class="no-content">
+                            <i class="fas fa-video"></i>
+                            <p>{% trans 'User has not uploaded any videos yet.' %}</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-lock"></i>
+                        <p>{% trans 'The user chose to hide this information.' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'favorites' %}
+            <div class="tab-content-favorites">
+                {% if can_view_content %}
+                    {% if page_obj %}
+                        <div class="video-grid">
+                            {% for video in page_obj %}
+                                {% include 'partials/video_card.html' %}
+                            {% endfor %}
+                        </div>
+
+                        {% if page_obj.has_other_pages %}
+                            {% include 'partials/pagination.html' with page_obj=page_obj %}
+                        {% endif %}
+                    {% else %}
+                        <div class="no-content">
+                            <i class="fas fa-heart"></i>
+                            <p>{% if user == profile_user %}{% trans 'You have no favorite videos' %}{% else %}{% trans 'User has no favorite videos' %}{% endif %}</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-lock"></i>
+                        <p>{% trans 'The user chose to hide this information.' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'friends' %}
+            <div class="tab-content-friends">
+                {% if can_view_content %}
+                    {% if page_obj %}
+                        <div class="friends-grid">
+                            {% for friend in page_obj %}
+                                <div class="friend-card">
+                                    <div class="friend-avatar">
+                                        {% if friend.avatar %}
+                                            <img src="{{ friend.avatar.url }}" alt="{{ friend.username }}">
+                                        {% else %}
+                                            <div class="avatar-placeholder">
+                                                {% get_avatar_initial friend %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="friend-info">
+                                        <h4><a href="{% url 'members:profile' username=friend.username %}">{{ friend.display_name }}</a></h4>
+                                        <p>@{{ friend.username }}</p>
+                                        <div class="friend-stats">
+                                            <span>{{ friend.videos_count }} {% trans 'videos' %}</span>
+                                            <span>{{ friend.subscribers_count }} {% trans 'subscribers' %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if page_obj.has_other_pages %}
+                            {% include 'partials/pagination.html' with page_obj=page_obj %}
+                        {% endif %}
+                    {% else %}
+                        <div class="no-content">
+                            <i class="fas fa-users"></i>
+                            <p>{% if user == profile_user %}{% trans 'You have no friends yet' %}{% else %}{% trans 'User has no friends yet' %}{% endif %}</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-lock"></i>
+                        <p>{% trans 'The user chose to hide this information.' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'about' %}
+            <div class="tab-content-about">
+                <div class="about-content">
+                    <h3>{{ profile_user.display_name }}</h3>
+                    {% if profile_user.bio %}
+                        <p>{{ profile_user.bio|linebreaks }}</p>
+
+                        {% if profile_user.profile.country %}
+                        <div class="profile-country">
+                            <span>{% trans 'Country' %}: {{ profile_user.profile.country }}</span>
+                        </div>
+                    {% endif %}
+
+                    {% else %}
+                        <p>{% trans 'User information is not provided.' %}</p>
+                    {% endif %}
+
+
+                </div>
+            </div>
+
+        {% elif current_tab == 'subscriptions' %}
+            <div class="tab-content-subscriptions">
+                {% if page_obj %}
+                    <div class="subscriptions-grid">
+                        {% for subscription in page_obj %}
+                            <div class="subscription-card">
+                                <div class="subscription-avatar">
+                                    {% if subscription.channel.avatar %}
+                                        <img src="{{ subscription.channel.avatar.url }}" alt="{{ subscription.channel.username }}">
+                                    {% else %}
+                                        <div class="avatar-placeholder">
+                                            {% get_avatar_initial subscription.channel %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="subscription-info">
+                                    <h4><a href="{% url 'members:profile' username=subscription.channel.username %}">{{ subscription.channel.display_name }}</a></h4>
+                                    <p>{{ subscription.channel.subscribers_count }} {% trans 'subscribers' %}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if page_obj.has_other_pages %}
+                        {% include 'partials/pagination.html' with page_obj=page_obj %}
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-bell"></i>
+                        <p>{% trans 'You have no subscriptions' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'playlists' %}
+            <div class="tab-content-playlists">
+                {% if page_obj %}
+                    <div class="playlists-grid">
+                        {% for playlist in page_obj %}
+                            <div class="playlist-card">
+                                <div class="playlist-thumbnail">
+                                    {% if playlist.videos.first %}
+                                        <img src="{{ playlist.videos.first.poster.url }}" alt="{{ playlist.title }}">
+                                    {% else %}
+                                        <div class="playlist-placeholder">
+                                            <i class="fas fa-list"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="playlist-count">{{ playlist.videos.count }} {% trans 'videos' %}</div>
+                                </div>
+                                <div class="playlist-info">
+                                    <h4><a href="{% url 'videos:playlist_detail' playlist_id=playlist.id %}">{{ playlist.title }}</a></h4>
+                                    <p>{{ playlist.description|truncatewords:10 }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if page_obj.has_other_pages %}
+                        {% include 'partials/pagination.html' with page_obj=page_obj %}
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-list"></i>
+                        <p>{% if user == profile_user %}{% trans 'You have no playlists' %}{% else %}{% trans 'User has no playlists' %}{% endif %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'watch_later' %}
+            <div class="tab-content-watch-later">
+                {% if can_view_content %}
+                    {% if page_obj %}
+                        <div class="video-grid">
+                            {% for video in page_obj %}
+                                {% include 'partials/video_card.html' %}
+                            {% endfor %}
+                        </div>
+
+                        {% if page_obj.has_other_pages %}
+                            {% include 'partials/pagination.html' with page_obj=page_obj %}
+                        {% endif %}
+                    {% else %}
+                        <div class="no-content">
+                            <i class="fas fa-clock"></i>
+                            <p>{% trans 'Watch Later list is empty.' %}</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-lock"></i>
+                        <p>{% trans 'The user chose to hide this information.' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif current_tab == 'notifications' %}
+            <div class="tab-content-notifications">
+                {% if page_obj %}
+                    <div class="notifications-list">
+                        {% for notification in page_obj %}
+                            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                                <div class="notification-avatar">
+                                    {% if notification.sender.avatar %}
+                                        <img src="{{ notification.sender.avatar.url }}" alt="{{ notification.sender.username }}">
+                                    {% else %}
+                                        <div class="avatar-placeholder">
+                                            {% get_avatar_initial notification.sender %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="notification-content">
+                                    <p>{{ notification.message }}</p>
+                                    <span class="notification-time">{{ notification.created_at|timesince }} {% trans 'ago' %}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if page_obj.has_other_pages %}
+                        {% include 'partials/pagination.html' with page_obj=page_obj %}
+                    {% endif %}
+                {% else %}
+                    <div class="no-content">
+                        <i class="fas fa-bell"></i>
+                        <p>{% trans 'You have no notifications.' %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

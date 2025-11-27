@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{% if profile_user %}{{ profile_user.username }}'s {% endif %}Watch Later - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if profile_user and profile_user != user %}{{ profile_user.username }}'s {% endif %}Watch Later</h1>
+    <p class="page-description">{% if profile_user and profile_user != user %}Videos {{ profile_user.username }} has marked to watch later{% else %}Videos you've marked to watch later{% endif %}</p>
+</div>
+
+<div class="video-grid">
+    {% for video in videos %}
+        {% include 'partials/video_card.html' with video=video %}
+    {% empty %}
+        <div class="no-content">
+            <i class="fas fa-clock"></i>
+            <h3>The list is empty</h3>
+            <p>Add a video using the icon on the card.</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% if videos.has_other_pages %}
+    {% include 'partials/pagination.html' %}
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

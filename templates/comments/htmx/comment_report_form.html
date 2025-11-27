@@ -1,0 +1,75 @@
+<div class="modal-overlay" id="report-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Report Comment</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form hx-post="{% url 'comments:report' comment.id %}" 
+              hx-target="#report-modal"
+              hx-swap="outerHTML"
+              class="modal-form">
+            <div class="form-group">
+                <label for="report_type">Report Type</label>
+                <select name="report_type" id="report_type" class="form-control" required>
+                    <option value="">Select report type</option>
+                    <option value="spam">Spam</option>
+                    <option value="inappropriate">Inappropriate Content</option>
+                    <option value="harassment">Harassment</option>
+                    <option value="hate_speech">Hate Speech</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Problem Description</label>
+                <textarea name="description" 
+                          id="description" 
+                          class="form-control" 
+                          rows="3" 
+                          placeholder="Describe the problem..."></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn btn--primary">Submit Report</button>
+                <button type="button" class="btn btn--secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+

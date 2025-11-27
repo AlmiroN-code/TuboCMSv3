@@ -1,0 +1,56 @@
+{% load core_tags %}
+
+<div class="notifications-dropdown">
+    <div class="notifications-header">
+        <h4>Notifications</h4>
+        {% if notifications %}
+            <a href="{% url 'members:notifications' username=request.user.username %}" class="view-all-link">All notifications</a>
+        {% endif %}
+    </div>
+    
+    <div class="notifications-list">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}"
+                     data-notification-id="{{ notification.id }}">
+                    <div class="notification-avatar">
+                        {% if notification.sender %}
+                            {% if notification.sender.avatar %}
+                                <img src="{{ notification.sender.avatar.url }}" alt="{{ notification.sender.username }}">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    {% get_avatar_initial notification.sender %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="system-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <div class="notification-time">{{ notification.created_at|time_ago }}</div>
+                    </div>
+                    
+                    {% if notification.action_url %}
+                        <a href="{{ notification.action_url }}" class="notification-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-notifications">
+                <i class="fas fa-bell-slash"></i>
+                <p>No new notifications</p>
+                <p><a href="{% url 'members:notifications' username=request.user.username %}">All notifications</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+

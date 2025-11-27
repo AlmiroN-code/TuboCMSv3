@@ -1,0 +1,433 @@
+{% load core_tags %}
+<div class="video-player-container">
+    <div class="video-player">
+        <video id="main-video" 
+               controls 
+               preload="metadata"
+               poster="{% if video.poster %}{{ video.poster.url }}{% endif %}"
+               playsinline>
+            Your browser does not support video playback.
+        </video>
+        
+        <div class="video-controls-overlay">
+            <div class="quality-selector">
+                <button id="quality-btn" class="control-btn" title="Quality">
+                    <i class="fas fa-cog"></i>
+                    <span id="current-quality">Auto</span>
+                </button>
+                <div id="quality-menu" class="quality-menu hidden">
+                    <div class="quality-option" data-quality="auto">
+                        <span>Auto</span>
+                        <i class="fas fa-check hidden"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stream-type-selector">
+                <button id="stream-type-btn" class="control-btn" title="Stream Type">
+                    <i class="fas fa-stream"></i>
+                    <span id="current-stream-type">HLS</span>
+                </button>
+            </div>
+            
+            <div class="video-info-overlay">
+                <span class="duration">{{ video.duration|format_duration }}</span>
+                <span class="resolution" id="current-resolution"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HLS.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<!-- DASH.js Library -->
+<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
+<script>
+(function() {
+    const video = document.getElementById('main-video');
+    const qualityBtn = document.getElementById('quality-btn');
+    const qualityMenu = document.getElementById('quality-menu');
+    const currentQualitySpan = document.getElementById('current-quality');
+    const currentResolutionSpan = document.getElementById('current-resolution');
+    const streamTypeBtn = document.getElementById('stream-type-btn');
+    const currentStreamTypeSpan = document.getElementById('current-stream-type');
+    
+    let hlsPlayer = null;
+    let dashPlayer = null;
+    let currentStreamType = 'hls';
+    let availableQualities = [];
+    
+    // Video data from Django
+    const videoData = {
+        id: {{ video.id }},
+        hasHLS: {% if has_hls %}true{% else %}false{% endif %},
+        hasDASH: {% if has_dash %}true{% else %}false{% endif %},
+        hlsUrl: {% if has_hls %}"{{ MEDIA_URL }}streams/hls/{{ video.id }}/master.m3u8"{% else %}null{% endif %},
+        dashUrl: {% if has_dash %}"{{ MEDIA_URL }}streams/dash/{{ video.id }}/master.mpd"{% else %}null{% endif %},
+        fallbackSources: [
+            {% for video_file in video.available_qualities %}
+            {
+                url: "{{ video_file.file.url }}",
+                quality: "{{ video_file.profile.resolution }}",
+                label: "{{ video_file.profile.name }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            {% if video.temp_video_file and not video.available_qualities %}
+            {
+                url: "{{ video.temp_video_file.url }}",
+                quality: "original",
+                label: "Original"
+            }
+            {% endif %}
+        ]
+    };
+    
+    // Initialize player
+    function initPlayer() {
+        if (videoData.hasHLS && Hls.isSupported()) {
+            initHLS();
+        } else if (videoData.hasDASH) {
+            initDASH();
+        } else {
+            initFallback();
+        }
+    }
+    
+    // Initialize HLS player
+    function initHLS() {
+        console.log('[PLAYER] Initializing HLS player');
+        currentStreamType = 'hls';
+        currentStreamTypeSpan.textContent = 'HLS';
+        
+        if (hlsPlayer) {
+            hlsPlayer.destroy();
+        }
+        
+        hlsPlayer = new Hls({
+            debug: false,
+            enableWorker: true,
+            lowLatencyMode: false,
+            backBufferLength: 90
+        });
+        
+        hlsPlayer.loadSource(videoData.hlsUrl);
+        hlsPlayer.attachMedia(video);
+        
+        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+            console.log('[HLS] Manifest parsed, levels:', data.levels.length);
+            
+            // Build quality menu
+            availableQualities = data.levels.map((level, index) => ({
+                index: index,
+                height: level.height,
+                bitrate: level.bitrate,
+                label: `${level.height}p`
+            }));
+            
+            buildQualityMenu();
+        });
+        
+        hlsPlayer.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+            const level = hlsPlayer.levels[data.level];
+            currentResolutionSpan.textContent = `${level.height}p`;
+            console.log('[HLS] Quality switched to:', level.height + 'p');
+        });
+        
+        hlsPlayer.on(Hls.Events.ERROR, function(event, data) {
+            console.error('[HLS] Error:', data);
+            if (data.fatal) {
+                switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.log('[HLS] Network error, trying to recover...');
+                        hlsPlayer.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.log('[HLS] Media error, trying to recover...');
+                        hlsPlayer.recoverMediaError();
+                        break;
+                    default:
+                        console.log('[HLS] Fatal error, switching to fallback');
+                        initFallback();
+                        break;
+                }
+            }
+        });
+    }
+    
+    // Initialize DASH player
+    function initDASH() {
+        console.log('[PLAYER] Initializing DASH player');
+        currentStreamType = 'dash';
+        currentStreamTypeSpan.textContent = 'DASH';
+        
+        if (dashPlayer) {
+            dashPlayer.reset();
+        }
+        
+        dashPlayer = dashjs.MediaPlayer().create();
+        dashPlayer.initialize(video, videoData.dashUrl, false);
+        
+        dashPlayer.updateSettings({
+            streaming: {
+                abr: {
+                    autoSwitchBitrate: {
+                        video: true
+                    }
+                },
+                buffer: {
+                    fastSwitchEnabled: true
+                }
+            }
+        });
+        
+        dashPlayer.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function() {
+            console.log('[DASH] Stream initialized');
+            const bitrateList = dashPlayer.getBitrateInfoListFor('video');
+            
+            availableQualities = bitrateList.map((bitrate, index) => ({
+                index: index,
+                height: bitrate.height,
+                bitrate: bitrate.bitrate,
+                label: `${bitrate.height}p`
+            }));
+            
+            buildQualityMenu();
+        });
+        
+        dashPlayer.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, function(e) {
+            if (e.mediaType === 'video') {
+                const bitrate = dashPlayer.getBitrateInfoListFor('video')[e.newQuality];
+                currentResolutionSpan.textContent = `${bitrate.height}p`;
+                console.log('[DASH] Quality switched to:', bitrate.height + 'p');
+            }
+        });
+        
+        dashPlayer.on(dashjs.MediaPlayer.events.ERROR, function(e) {
+            console.error('[DASH] Error:', e);
+            initFallback();
+        });
+    }
+    
+    // Initialize fallback player (standard HTML5)
+    function initFallback() {
+        console.log('[PLAYER] Initializing fallback player');
+        currentStreamTypeSpan.textContent = 'MP4';
+        
+        if (hlsPlayer) {
+            hlsPlayer.destroy();
+            hlsPlayer = null;
+        }
+        if (dashPlayer) {
+            dashPlayer.reset();
+            dashPlayer = null;
+        }
+        
+        video.innerHTML = '';
+        
+        videoData.fallbackSources.forEach(source => {
+            const sourceEl = document.createElement('source');
+            sourceEl.src = source.url;
+            sourceEl.type = 'video/mp4';
+            sourceEl.dataset.quality = source.quality;
+            video.appendChild(sourceEl);
+        });
+        
+        availableQualities = videoData.fallbackSources.map((source, index) => ({
+            index: index,
+            label: source.label,
+            quality: source.quality
+        }));
+        
+        buildQualityMenu();
+        video.load();
+    }
+    
+    // Build quality selection menu
+    function buildQualityMenu() {
+        qualityMenu.innerHTML = '<div class="quality-option" data-quality="auto"><span>Auto</span><i class="fas fa-check"></i></div>';
+        
+        availableQualities.forEach(quality => {
+            const option = document.createElement('div');
+            option.className = 'quality-option';
+            option.dataset.quality = quality.index;
+            option.innerHTML = `<span>${quality.label}</span><i class="fas fa-check hidden"></i>`;
+            option.addEventListener('click', () => selectQuality(quality.index));
+            qualityMenu.appendChild(option);
+        });
+        
+        // Auto is selected by default
+        qualityMenu.querySelector('[data-quality="auto"] i').classList.remove('hidden');
+    }
+    
+    // Select quality
+    function selectQuality(qualityIndex) {
+        if (qualityIndex === 'auto') {
+            if (hlsPlayer) {
+                hlsPlayer.currentLevel = -1; // Auto
+            } else if (dashPlayer) {
+                dashPlayer.updateSettings({
+                    streaming: {
+                        abr: {
+                            autoSwitchBitrate: { video: true }
+                        }
+                    }
+                });
+            }
+            currentQualitySpan.textContent = 'Auto';
+        } else {
+            if (hlsPlayer) {
+                hlsPlayer.currentLevel = qualityIndex;
+                currentQualitySpan.textContent = availableQualities[qualityIndex].label;
+            } else if (dashPlayer) {
+                dashPlayer.updateSettings({
+                    streaming: {
+                        abr: {
+                            autoSwitchBitrate: { video: false }
+                        }
+                    }
+                });
+                dashPlayer.setQualityFor('video', qualityIndex);
+                currentQualitySpan.textContent = availableQualities[qualityIndex].label;
+            } else {
+                // Fallback: switch source
+                const currentTime = video.currentTime;
+                const isPaused = video.paused;
+                video.src = videoData.fallbackSources[qualityIndex].url;
+                video.load();
+                video.currentTime = currentTime;
+                if (!isPaused) video.play();
+                currentQualitySpan.textContent = availableQualities[qualityIndex].label;
+            }
+        }
+        
+        // Update checkmarks
+        qualityMenu.querySelectorAll('.quality-option i').forEach(i => i.classList.add('hidden'));
+        qualityMenu.querySelector(`[data-quality="${qualityIndex}"] i`).classList.remove('hidden');
+        qualityMenu.classList.add('hidden');
+    }
+    
+    // Toggle quality menu
+    qualityBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        qualityMenu.classList.toggle('hidden');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function() {
+        qualityMenu.classList.add('hidden');
+    });
+    
+    // Switch stream type
+    streamTypeBtn.addEventListener('click', function() {
+        if (currentStreamType === 'hls' && videoData.hasDASH) {
+            initDASH();
+        } else if (currentStreamType === 'dash' && videoData.hasHLS) {
+            initHLS();
+        } else {
+            initFallback();
+        }
+    });
+    
+    // Initialize on page load
+    initPlayer();
+    
+    // View tracking is handled server-side when page loads
+})();
+</script>
+
+<style>
+.video-player-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+}
+
+.video-player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+#main-video {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.video-controls-overlay {
+    position: absolute;
+    bottom: 60px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    z-index: 10;
+}
+
+.control-btn {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.control-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.quality-selector {
+    position: relative;
+}
+
+.quality-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    min-width: 150px;
+    overflow: hidden;
+}
+
+.quality-menu.hidden {
+    display: none;
+}
+
+.quality-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    transition: background 0.2s;
+}
+
+.quality-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.quality-option i {
+    color: var(--accent-color, #8AA398);
+}
+
+.video-info-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    gap: 10px;
+}
+</style>

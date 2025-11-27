@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Register {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-form">
+        <h2>Register on {% if site_settings.add_site_name_to_title %}{{ site_settings.site_name }}{% endif %}</h2>
+        
+        {% if site_settings and not site_settings.allow_registration %}
+            <div class="alert alert-error">
+                <p>New user registration is temporarily disabled.</p>
+                <p>Please try again later or contact the administrator.</p>
+            </div>
+            <div class="auth-links">
+                <p>Already have an account? <a href="{% url 'users:login' %}">Log In</a></p>
+            </div>
+        {% else %}
+            <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="form-errors">
+                        {% for error in form.username.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-errors">
+                        {% for error in form.email.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.first_name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.last_name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password1.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password2.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.register_as_model }}
+                    <label class="form-check-label" for="{{ form.register_as_model.id_for_label }}">
+                        {{ form.register_as_model.label }}
+                    </label>
+                    {% if form.register_as_model.help_text %}
+                        <small class="form-text text-muted">{{ form.register_as_model.help_text }}</small>
+                    {% endif %}
+                    {% if form.register_as_model.errors %}
+                        <div class="form-errors">
+                            {% for error in form.register_as_model.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn--primary">Register</button>
+        </form>
+        
+            <div class="auth-links">
+                <p>Already have an account? <a href="{% url 'users:login' %}">Log In</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

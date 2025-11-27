@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Publishing a video in {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-form">
+        <h2>Adding a video</h2>
+        
+        <form method="post" enctype="multipart/form-data" id="upload-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-errors">
+                        {% for error in form.title.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-errors">
+                        {% for error in form.description.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category and genre</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="form-errors">
+                        {% for error in form.category.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.performers.id_for_label }}">{{ form.performers.label }}</label>
+                {{ form.performers }}
+                {% if form.performers.help_text %}
+                    <small class="form-help">{{ form.performers.help_text }}</small>
+                {% endif %}
+                {% if form.performers.errors %}
+                    <div class="form-errors">
+                        {% for error in form.performers.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.tags_input.id_for_label }}">Tags</label>
+                {{ form.tags_input }}
+                {{ form.tags }} {# Hidden field #}
+                {% if form.tags_input.errors %}
+                    <div class="form-errors">
+                        {% for error in form.tags_input.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div id="tag-autocomplete-results" class="tag-autocomplete-results"></div>
+                <div id="selected-tags" class="selected-tags"></div>
+                <small class="form-help">Enter tags separated by commas. You can select from suggested tags while typing.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="video_file">Video file</label>
+                <input type="file" name="video_file" id="video_file" accept="video/*" required>
+                <div class="file-info">
+                    <small>
+                        Supported formats: {{ site_settings.allowed_video_formats|default:"MP4, AVI, MOV, WMV" }}. 
+                        Maximum size: {{ site_settings.max_video_size|default:"500" }}MB
+                    </small>
+                </div>
+            </div>
+            
+            
+            <div class="upload-progress hidden" id="upload-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            
+            <button type="submit" class="btn btn--primary" id="submit-btn">Upload video</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Tag management
+let selectedTags = new Set();
+
+function addTag(tagId, tagName) {
+    if (!selectedTags.has(tagName)) {
+        selectedTags.add(tagName);
+        updateSelectedTagsDisplay();
+        updateTagsInput();
+    }
+    document.getElementById('tag-autocomplete-results').innerHTML = '';
+    document.getElementById('tags-input').value = '';
+}
+
+function removeTag(tagName) {
+    selectedTags.delete(tagName);
+    updateSelectedTagsDisplay();
+    updateTagsInput();
+}
+
+function updateSelectedTagsDisplay() {
+    const container = document.getElementById('selected-tags');
+    container.innerHTML = '';
+    selectedTags.forEach(tagName => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'selected-tag-item';
+        tagEl.innerHTML = `${tagName} <span class="tag-remove" onclick="removeTag('${tagName}')">×</span>`;
+        container.appendChild(tagEl);
+    });
+}
+
+function updateTagsInput() {
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        // Update value for form submission (comma-separated)
+        tagsInput.value = Array.from(selectedTags).join(', ');
+    }
+}
+
+// Handle tag input
+document.addEventListener('DOMContentLoaded', function() {
+    const tagsInput = document.getElementById('tags-input');
+    if (tagsInput) {
+        // Initialize selected tags from existing
+        const existingTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+        existingTags.forEach(tag => selectedTags.add(tag));
+        updateSelectedTagsDisplay();
+        
+        // Handle Enter or comma key press
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === ',' || e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.value.trim();
+                if (value) {
+                    const tags = value.split(',').map(t => t.trim()).filter(t => t);
+                    tags.forEach(tag => {
+                        if (!selectedTags.has(tag)) {
+                            selectedTags.add(tag);
+                        }
+                    });
+                    updateSelectedTagsDisplay();
+                    updateTagsInput();
+                    this.value = '';
+                    document.getElementById('tag-autocomplete-results').innerHTML = '';
+                }
+            }
+        });
+        
+        // Handle click on autocomplete items
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tag-autocomplete-item')) {
+                const tagName = e.target.getAttribute('data-tag-name');
+                const tagId = e.target.getAttribute('data-tag-id');
+                if (tagName) {
+                    addTag(tagId, tagName);
+                }
+            }
+        });
+    }
+});
+
+document.getElementById('upload-form').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('video_file');
+    const progressDiv = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const maxSize = {{ site_settings.max_video_size|default:"500" }} * 1024 * 1024; // MB to bytes
+        
+        if (file.size > maxSize) {
+            e.preventDefault();
+            alert('The file is too large. Maximum size: {{ site_settings.max_video_size|default:"500" }}MB');
+            return;
+        }
+        
+        // Show progress
+        progressDiv.classList.remove('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
+        
+        // Progress simulation (in real app this will be via HTMX)
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) progress = 90;
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+            
+            if (progress >= 90) {
+                clearInterval(interval);
+            }
+        }, 200);
+    }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

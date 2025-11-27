@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load custom_i18n %}
+
+{% block title %}{% trans_custom 'Settings' %} {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-form">
+            <h2>{% trans_custom 'Account Settings' %}</h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="settings-section">
+                    <h3>{% trans_custom 'Appearance' %}</h3>
+
+                    <div class="form-group">
+                        <label for="{{ form.theme_preference.id_for_label }}">{% trans_custom 'Theme' %}</label>
+                        {{ form.theme_preference }}
+                        {% if form.theme_preference.errors %}
+                            <div class="form-errors">
+                                {% for error in form.theme_preference.errors %}
+                                    <span class="error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.language.id_for_label }}">{% trans_custom 'Language' %}</label>
+                        {{ form.language }}
+                        {% if form.language.errors %}
+                            <div class="form-errors">
+                                {% for error in form.language.errors %}
+                                    <span class="error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>{% trans_custom 'Profile' %}</h3>
+
+                    <div class="form-group">
+                        <label for="{{ form.country.id_for_label }}">{% trans_custom 'Country' %}</label>
+                        {{ form.country }}
+                        {% if form.country.errors %}
+                            <div class="form-errors">
+                                {% for error in form.country.errors %}
+                                    <span class="error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            <div class="settings-section">
+                <h3>{% trans_custom 'Notifications' %}</h3>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.notifications_enabled }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Enable notifications' %}
+                    </label>
+                    {% if form.notifications_enabled.errors %}
+                        <div class="form-errors">
+                            {% for error in form.notifications_enabled.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.email_notifications }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Email notifications' %}
+                    </label>
+                    {% if form.email_notifications.errors %}
+                        <div class="form-errors">
+                            {% for error in form.email_notifications.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>{% trans_custom 'Privacy' %}</h3>
+
+                <div class="form-group">
+                    <label for="{{ form.privacy_level.id_for_label }}">{% trans_custom 'Privacy Level' %}</label>
+                    {{ form.privacy_level }}
+                    {% if form.privacy_level.errors %}
+                        <div class="form-errors">
+                            {% for error in form.privacy_level.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <p class="settings-description">{% trans_custom 'Choose which profile sections are visible to other users:' %}</p>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.show_videos_publicly }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Show Videos to others' %}
+                    </label>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.show_favorites_publicly }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Show Favorites to others' %}
+                    </label>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.show_watch_later_publicly }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Show Watch Later to others' %}
+                    </label>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        {{ form.show_friends_publicly }}
+                        <span class="checkmark"></span>
+                        {% trans_custom 'Show Friends to others' %}
+                    </label>
+                </div>
+
+                <p class="settings-note">{% trans_custom 'Note: Subscriptions and Notifications are always private. Playlists show only public ones to others.' %}</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">{% trans_custom 'Save Settings' %}</button>
+                <a href="{% url 'members:profile' username=user.username %}" class="btn btn--secondary">{% trans_custom 'Cancel' %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

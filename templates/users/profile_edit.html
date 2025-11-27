@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit profile {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-edit-form">
+        <h2>Edit profile</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.first_name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">Surname</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.last_name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-errors">
+                        {% for error in form.email.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.bio.id_for_label }}">About me</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bio.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}">Location</label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <div class="form-errors">
+                        {% for error in form.location.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.website.id_for_label }}">Website</label>
+                {{ form.website }}
+                {% if form.website.errors %}
+                    <div class="form-errors">
+                        {% for error in form.website.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="avatar">Avatar</label>
+                <input type="file" name="avatar" id="avatar" accept="image/*" class="form-control">
+                {% if user.avatar %}
+                    <div class="current-avatar">
+                        <img src="{{ user.avatar.url }}" alt="Current avatar" class="avatar-preview">
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Save changes</button>
+                <a href="{% url 'members:profile' username=user.username %}" class="btn btn--secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

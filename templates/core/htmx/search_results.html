@@ -1,0 +1,155 @@
+{% load core_tags %}
+{% load ads_tags %}
+
+{% if videos or users or categories or tags %}
+    <div class="search-results-dropdown">
+        
+        <!-- Видео -->
+        {% if videos %}
+            {% if search_type == 'all' %}
+                <div class="search-section-header">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Видео</span>
+                </div>
+            {% endif %}
+            {% for video in videos %}
+                <a href="{% url 'videos:detail' slug=video.slug %}" class="search-result-item video-item">
+                    <div class="search-result-thumbnail">
+                        {% if video.poster %}
+                            <img src="{{ video.poster.url }}" alt="{{ video.title }}" loading="lazy">
+                        {% else %}
+                            <div class="poster-placeholder">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        {% endif %}
+                        {% if video.duration %}
+                            <div class="duration">{{ video.duration|format_duration }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-title">{{ video.title|truncatechars:60 }}</div>
+                        <div class="search-result-meta">
+                            {% if video.created_by %}
+                                <span>{{ video.created_by.username }}</span>
+                            {% endif %}
+                            <span>{{ video.views_count|format_views }} просмотров</span>
+                            <span>{{ video.created_at|time_ago }}</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Пользователи -->
+        {% if users %}
+            {% if search_type == 'all' and videos %}
+                <div class="search-divider"></div>
+            {% endif %}
+            {% if search_type == 'all' %}
+                <div class="search-section-header">
+                    <i class="fas fa-users"></i>
+                    <span>Пользователи</span>
+                </div>
+            {% endif %}
+            {% for user in users %}
+                <a href="{% url 'users:profile' username=user.username %}" class="search-result-item user-item">
+                    <div class="search-result-avatar">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" loading="lazy">
+                        {% else %}
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-title">{{ user.username }}</div>
+                        <div class="search-result-meta">
+                            {% if user.videos_count_actual %}
+                                <span>{{ user.videos_count_actual }} видео</span>
+                            {% endif %}
+                            {% if user.subscribers_count %}
+                                <span>{{ user.subscribers_count }} подписчиков</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Категории -->
+        {% if categories %}
+            {% if search_type == 'all' and videos or search_type == 'all' and users %}
+                <div class="search-divider"></div>
+            {% endif %}
+            {% if search_type == 'all' %}
+                <div class="search-section-header">
+                    <i class="fas fa-folder"></i>
+                    <span>Категории</span>
+                </div>
+            {% endif %}
+            {% for category in categories %}
+                <a href="{% url 'videos:category' slug=category.slug %}" class="search-result-item category-item">
+                    <div class="search-result-icon">
+                        {% if category.icon %}
+                            <i class="{{ category.icon }}"></i>
+                        {% else %}
+                            <i class="fas fa-folder"></i>
+                        {% endif %}
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-title">{{ category.name }}</div>
+                        <div class="search-result-meta">
+                            <span>{{ category.video_count }} видео</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Теги -->
+        {% if tags %}
+            {% if search_type == 'all' and videos or search_type == 'all' and users or search_type == 'all' and categories %}
+                <div class="search-divider"></div>
+            {% endif %}
+            {% if search_type == 'all' %}
+                <div class="search-section-header">
+                    <i class="fas fa-tags"></i>
+                    <span>Теги</span>
+                </div>
+            {% endif %}
+            {% for tag in tags %}
+                <a href="{% url 'core:tag_videos' slug=tag.slug %}" class="search-result-item tag-item">
+                    <div class="search-result-tag" style="background-color: {{ tag.color }}20; border-left: 3px solid {{ tag.color }};">
+                        <i class="fas fa-tag" style="color: {{ tag.color }};"></i>
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-title">{{ tag.name }}</div>
+                        <div class="search-result-meta">
+                            <span>{{ tag.video_count }} видео</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Показать все результаты -->
+        {% if search_type == 'all' %}
+            <div class="search-divider"></div>
+            <a href="{% url 'core:search' %}?q={{ query }}" class="search-result-more">
+                <i class="fas fa-search"></i>
+                Показать все результаты
+            </a>
+        {% endif %}
+    </div>
+{% else %}
+    {% if query|length >= 2 %}
+        <div class="search-results-empty">
+            <i class="fas fa-search"></i>
+            <p>Ничего не найдено</p>
+        </div>
+    {% endif %}
+{% endif %}
+
+
+

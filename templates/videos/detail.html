@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Watch {{ video.title }} {% if site_settings.add_site_name_to_title %}on {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="video-detail-container">
+    <div class="video-player-section">
+        <div class="video-player">
+    {% if has_streams or video.converted_files or video.available_qualities or video.temp_video_file %}
+        {% include 'videos/player_adaptive.html' %}
+    {% else %}
+                <div class="no-video-placeholder">
+                    <div class="placeholder-content">
+                        <i class="fas fa-video"></i>
+                        <h3>Video unavailable</h3>
+                        <p>The video file has not been uploaded or is being processed</p>
+                        {% if video.processing_status == 'processing' %}
+                            <div class="processing-indicator">
+                                <div class="spinner"></div>
+                                <span>Processing video...</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="video-info-section">
+            <h1 class="video-title">{{ video.title }}</h1>
+            
+            <div class="video-meta">
+                <div class="video-stats">
+                    <span class="views">{{ video.views_count|format_views }} views</span>
+                    <span class="date">{{ video.created_at|time_ago }}</span>
+                </div>
+                
+                <div class="video-actions" id="video-actions">
+                    {% include 'videos/htmx/actions.html' %}
+                </div>
+            </div>
+            
+            <!-- Rating system -->
+            <div id="rating-widget-container">
+                {% include 'videos/htmx/rating_widget.html' %}
+            </div>
+            
+            <div class="video-description">
+                {% if video.created_by %}
+                <div class="channel-info">
+                    <div class="channel-avatar">
+                        {% get_avatar_initial video.created_by %}
+                    </div>
+                    <div class="channel-details">
+                        <h3>{{ video.created_by.display_name }}</h3>
+                        <span class="subscribers">{{ video.created_by.subscribers_count }} subscribers</span>
+                    </div>
+                    {% if user.is_authenticated and user != video.created_by %}
+                        <button class="subscribe-btn" 
+                                id="subscribe-btn"
+                                hx-post="{% url 'members:subscribe' username=video.created_by.username %}"
+                                hx-target="#subscribe-btn"
+                                hx-swap="outerHTML"
+                                hx-indicator="#subscribe-btn">
+                            Subscribe
+                        </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="description-text">
+                    {{ video.description|linebreaks }}
+                </div>
+                
+                {% if video.performers.exists %}
+                    <div class="video-models">
+                        <h4>Models:</h4>
+                        <div class="models-list">
+                            {% for performer in video.performers.all %}
+                                <a href="{% url 'models:detail' slug=performer.slug %}" class="model-link">
+                                    {% if performer.avatar %}
+                                        <img src="{{ performer.avatar.url }}" alt="{{ performer.display_name }}" class="model-avatar">
+                                    {% else %}
+                                        <div class="model-avatar-placeholder">{{ performer.display_name|first }}</div>
+                                    {% endif %}
+                                    <span class="model-name">{{ performer.display_name }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if video.tags.exists %}
+                    <div class="video-tags">
+                        {% for tag in video.tags.all %}
+                            <a href="{% url 'core:tag_videos' tag.slug %}" class="tag">{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="comments-section">
+        <h3>Comments ({{ video.comments_count }})</h3>
+        
+        {% if user.is_authenticated %}
+            <div id="comment-form-container">
+                {% include 'comments/htmx/comment_form.html' %}
+            </div>
+        {% else %}
+            <div class="login-prompt">
+                <p>Log in to leave a comment</p>
+                <a href="{% url 'users:login' %}" class="btn btn--primary">Log In</a>
+            </div>
+        {% endif %}
+        
+        <div id="comments-list">
+            {% include 'comments/htmx/comments_list.html' %}
+        </div>
+    </div>
+    
+    <div class="recommendations-section">
+        <h3>Recommended Videos</h3>
+        <div id="recommendations">
+            {% include 'videos/htmx/recommendations.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

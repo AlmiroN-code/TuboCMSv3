@@ -1,0 +1,65 @@
+{% load core_tags %}
+<div class="video-card">
+    <a href="{% url 'videos:detail' video.slug %}">
+        <div class="thumbnail">
+            {% if video.poster %}
+                <img src="{{ video.poster.url }}" alt="{{ video.title }}" class="poster-image" loading="lazy">
+            {% else %}
+                <div class="poster-placeholder"></div>
+            {% endif %}
+            
+            {% if video.preview %}
+                <video src="{{ video.preview.url }}" alt="{{ video.title }}" class="preview-video" loading="lazy" muted loop preload="metadata"></video>
+            {% endif %}
+            
+            <span class="duration">{{ video.duration|format_duration }}</span>
+            
+            <!-- Video action buttons -->
+            <div class="video-actions">
+                <div class="watch-later-mount"
+                     hx-get="{% url 'videos:htmx_watch_later_button' video.slug %}"
+                     hx-trigger="load"
+                     hx-target="this"
+                     hx-swap="outerHTML"></div>
+                
+                {% if user.is_authenticated %}
+                    <!-- Favorite button mount -->
+                    <div class="favorite-mount"
+                         hx-get="{% url 'videos:htmx_favorite_button' video.slug %}"
+                         hx-trigger="load"
+                         hx-target="this"
+                         hx-swap="outerHTML"></div>
+                    
+                    <!-- Add to playlist button mount -->
+                    <div class="playlist-mount"
+                         hx-get="{% url 'videos:htmx_playlist_button' video.slug %}"
+                         hx-trigger="load"
+                         hx-target="this"
+                         hx-swap="outerHTML"></div>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+    <div class="video-info">
+         <!-- <div class="channel-avatar">
+            {% get_avatar_initial video.user %}
+        </div> -->
+        <div class="video-details">
+            <div class="video-title">
+                <a href="{% url 'videos:detail' video.slug %}">{{ video.title|truncate_text:50 }}</a>
+            </div>
+            <!-- <div class="channel-name">{{ video.user.display_name }}</div> -->
+            <div class="video-meta">
+                <span>{{ video.views_count|format_views }} views</span>
+                <span>{{ video.created_at|time_ago }}</span>
+            </div>
+            <!-- Example of using only rating emoji -->
+            {% if rating_stats %}
+                <div class="video-rating-emoji">
+                    {% include 'videos/htmx/rating_emoji.html' %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,98 @@
+{% load core_tags %}
+<div class="video-player-container">
+    <div class="video-player">
+        <video id="main-video" controls poster="{% if video.poster %}{{ video.poster.url }}{% endif %}">
+            {% if video.converted_files %}
+                {% for file_path in video.converted_files %}
+                    {% with resolution=file_path|slice:"-7:-4" %}
+                        <source src="/media/{{ file_path }}" type="video/mp4" data-quality="{{ resolution }}">
+                    {% endwith %}
+                {% endfor %}
+            {% elif video.temp_video_file %}
+                <source src="{{ video.temp_video_file.url }}" type="video/mp4" data-quality="primary">
+            {% endif %}
+            {% for video_file in video.available_qualities %}
+                <source src="{{ video_file.file.url }}" type="video/mp4" data-quality="{{ video_file.profile.resolution }}">
+            {% endfor %}
+            Your browser does not support video.
+        </video>
+        
+        <div class="video-controls">
+            <div class="quality-selector">
+                <label for="quality-select">Quality:</label>
+                <select id="quality-select">
+                    {% if video.converted_files %}
+                        {% for file_path in video.converted_files %}
+                            {% with resolution=file_path|slice:"-7:-4" %}
+                                <option value="{{ resolution }}" {% if forloop.first %}selected{% endif %}>
+                                    {{ resolution }}p
+                                </option>
+                            {% endwith %}
+                        {% endfor %}
+                    {% elif video.temp_video_file %}
+                        <option value="primary" selected>Primary Quality</option>
+                    {% endif %}
+                    {% for video_file in video.available_qualities %}
+                        <option value="{{ video_file.profile.resolution }}">
+                            {{ video_file.profile.name }} ({{ video_file.profile.resolution }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="video-info">
+                <span class="duration">{{ video.duration|format_duration }}</span>
+                <span class="views">{{ video.views_count }} views</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('main-video');
+    const qualitySelect = document.getElementById('quality-select');
+    const sources = video.querySelectorAll('source');
+    
+    // Store current time
+    let currentTime = 0;
+    
+    qualitySelect.addEventListener('change', function() {
+        const selectedQuality = this.value;
+        const currentTime = video.currentTime;
+        const isPaused = video.paused;
+        
+        // Find source with selected quality
+        let selectedSource = null;
+        sources.forEach(source => {
+            if (source.dataset.quality === selectedQuality) {
+                selectedSource = source;
+            }
+        });
+        
+        if (selectedSource) {
+            // Update video source
+            video.src = selectedSource.src;
+            video.load();
+            
+            // Restore playback state
+            video.addEventListener('loadeddata', function() {
+                video.currentTime = currentTime;
+                if (!isPaused) {
+                    video.play();
+                }
+            }, { once: true });
+        }
+    });
+    
+    // Update quality selector when video source changes
+    video.addEventListener('loadstart', function() {
+        const currentSrc = video.currentSrc;
+        sources.forEach(source => {
+            if (source.src === currentSrc) {
+                qualitySelect.value = source.dataset.quality;
+            }
+        });
+    });
+});
+</script>

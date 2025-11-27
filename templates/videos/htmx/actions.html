@@ -1,0 +1,69 @@
+{% load core_tags %}
+<div class="video-actions">
+    {% if user.is_authenticated %}
+        <button class="action-btn like-btn" 
+                hx-post="{% url 'videos:htmx_like' video.slug %}" 
+                hx-vals='{"value": 1}'
+                hx-target="#video-actions"
+                hx-swap="outerHTML"
+                hx-indicator="#video-actions">
+            <i class="fas fa-thumbs-up"></i>
+            <span>{{ video.likes_count }}</span>
+        </button>
+        
+        <button class="action-btn dislike-btn" 
+                hx-post="{% url 'videos:htmx_like' video.slug %}" 
+                hx-vals='{"value": -1}'
+                hx-target="#video-actions"
+                hx-swap="outerHTML"
+                hx-indicator="#video-actions">
+            <i class="fas fa-thumbs-down"></i>
+            <span>{{ video.dislikes_count }}</span>
+        </button>
+    {% else %}
+        <div class="like-display">
+            <span class="likes-count">{{ video.likes_count }} likes</span>
+            <span class="dislikes-count">{{ video.dislikes_count }} dislikes</span>
+        </div>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        <!-- Watch Later Button -->
+        <div id="watch-later-button">
+            {% include 'videos/htmx/watch_later_button.html' %}
+        </div>
+        
+        <!-- Favorites Button -->
+        <button class="action-btn favorite-btn {% if is_favorite %}active{% endif %}" 
+                onclick="toggleFavorite({{ video.id }}, this)"
+                title="{% if is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}">
+            <i class="fas fa-heart"></i>
+            <span>{% if is_favorite %}Favorited{% else %}Favorite{% endif %}</span>
+        </button>
+        
+        <!-- Add to Playlist Button -->
+        <button class="action-btn playlist-btn" 
+                hx-get="{% url 'videos:htmx_playlists_modal' video.id %}"
+                hx-target="body"
+                hx-swap="beforeend"
+                title="Add to Playlist">
+            <i class="fas fa-plus"></i>
+            <span>Playlist</span>
+        </button>
+    {% endif %}
+    
+    <button class="action-btn share-btn">
+        <i class="fas fa-share"></i>
+        <span>Share</span>
+    </button>
+    
+    {% if user.is_authenticated and user != video.user %}
+        <button class="action-btn report-btn" 
+                hx-get="{% url 'videos:report' video.slug %}"
+                hx-target="body"
+                hx-swap="beforeend">
+            <i class="fas fa-flag"></i>
+            <span>Report</span>
+        </button>
+    {% endif %}
+</div>

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Advertising Campaigns - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>My Advertising Campaigns</h1>
+        <p class="page-description">Manage your advertising campaigns</p>
+    </div>
+
+    {% if campaigns %}
+        <div class="campaigns-grid">
+            {% for campaign in campaigns %}
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <h3 class="campaign-name">
+                            <a href="{% url 'ads:campaign_detail' campaign.id %}">{{ campaign.name }}</a>
+                        </h3>
+                        <span class="campaign-status status-{{ campaign.status }}">
+                            {{ campaign.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="campaign-info">
+                        <p class="campaign-description">{{ campaign.description|truncatewords:20 }}</p>
+                        
+                        <div class="campaign-dates">
+                            <span class="date-label">Start:</span>
+                            <span class="date-value">{{ campaign.start_date|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        
+                        <div class="campaign-dates">
+                            <span class="date-label">End:</span>
+                            <span class="date-value">{{ campaign.end_date|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        
+                        {% if campaign.budget %}
+                        <div class="campaign-budget">
+                            <span class="budget-label">Budget:</span>
+                            <span class="budget-value">{{ campaign.budget }} ₽</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="campaign-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Banners:</span>
+                            <span class="stat-value">{{ campaign.banners.count }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Impressions:</span>
+                            <span class="stat-value">{{ campaign.banners.all|length }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="campaign-actions">
+                        <a href="{% url 'ads:campaign_detail' campaign.id %}" class="btn btn--primary">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <h3>No advertising campaigns</h3>
+            <p>Create your first advertising campaign in the admin panel.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+

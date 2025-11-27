@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Subscriptions {% if site_settings.add_site_name_to_title %}- {{ site_settings.site_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="subscriptions-container">
+    <div class="subscriptions-header">
+        <h1>My Subscriptions</h1>
+        <p>Members you are subscribed to</p>
+    </div>
+    
+    {% if subscriptions %}
+        <div class="subscriptions-grid">
+            {% for subscription in subscriptions %}
+                <div class="subscription-card">
+                    <a href="{% url 'members:profile' username=subscription.channel.username %}">
+                        <div class="channel-avatar">
+                            {% get_avatar_initial subscription.channel %}
+                        </div>
+                        <div class="channel-info">
+                            <h3>{{ subscription.channel.display_name }}</h3>
+                            <p>@{{ subscription.channel.username }}</p>
+                            <div class="channel-stats">
+                                <span><i class="fas fa-video"></i> {{ subscription.channel.videos_count }} videos</span>
+                                <span><i class="fas fa-users"></i> {{ subscription.channel.subscribers_count }} subscribers</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <div class="subscription-actions">
+                        <button class="btn btn--secondary btn--sm unsubscribe-btn" 
+                                hx-post="{% url 'users:unsubscribe' subscription.channel.username %}"
+                                hx-target="closest .subscription-card"
+                                hx-swap="outerHTML"
+                                hx-confirm="Unsubscribe from {{ subscription.channel.display_name }}?">
+                            <i class="fas fa-user-minus"></i>
+                            Unsubscribe
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-subscriptions">
+            <div class="no-subscriptions-content">
+                <i class="fas fa-user-friends"></i>
+                <h3>You don't have subscriptions yet</h3>
+                <p>Find interesting members of our community and subscribe to them to see their videos in your feed</p>
+                <a href="{% url 'core:search' %}" class="btn btn--primary">
+                    <i class="fas fa-search"></i>
+                    Find Members
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,7 @@
+# Production requirements based on base.txt
+-r base.txt
+
+# Additional production-only packages
+psutil==5.9.6
+django-cacheops==7.1.0
+django-health-check==3.17.0

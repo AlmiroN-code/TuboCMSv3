@@ -1,0 +1,238 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:10+0300\n"
+"PO-Revision-Date: 2025-11-25 23:10+0300\n"
+"Last-Translator: Almir Khamadiev <admin@example.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
+
+msgid "Settings saved successfully!"
+msgstr "Settings saved successfully!"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Upload video"
+msgstr "Upload video"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Toggle theme"
+msgstr "Toggle theme"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "My Profile"
+msgstr "My Profile"
+
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+msgid "Playlists"
+msgstr "Playlists"
+
+msgid "Favorites"
+msgstr "Favorites"
+
+msgid "Watch Later"
+msgstr "Watch Later"
+
+msgid "Subscriptions"
+msgstr "Subscriptions"
+
+msgid "Admin Panel"
+msgstr "Admin Panel"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Videos"
+msgstr "Videos"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Pornstars"
+msgstr "Pornstars"
+
+msgid "Popular"
+msgstr "Popular"
+
+msgid "Trends"
+msgstr "Trends"
+
+msgid "Search..."
+msgstr "Search..."
+
+msgid "About Us"
+msgstr "About Us"
+
+msgid "About Company"
+msgstr "About Company"
+
+msgid "Press"
+msgstr "Press"
+
+msgid "Careers"
+msgstr "Careers"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "For Creators"
+msgstr "For Creators"
+
+msgid "TubeCMS for Authors"
+msgstr "TubeCMS for Authors"
+
+msgid "Monetization"
+msgstr "Monetization"
+
+msgid "Partner Program"
+msgstr "Partner Program"
+
+msgid "Creative Studios"
+msgstr "Creative Studios"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Support Center"
+msgstr "Support Center"
+
+msgid "Community"
+msgstr "Community"
+
+msgid "Rules"
+msgstr "Rules"
+
+msgid "Security"
+msgstr "Security"
+
+msgid "Follow Us"
+msgstr "Follow Us"
+
+msgid "All rights reserved."
+msgstr "All rights reserved."
+
+msgid "Views"
+msgstr "Views"
+
+msgid "Subscribers"
+msgstr "Subscribers"
+
+msgid "User information is not provided."
+msgstr "User information is not provided."
+
+msgid "Country"
+msgstr "Country"
+
+msgid "Unsubscribe"
+msgstr "Unsubscribe"
+
+msgid "Subscribe"
+msgstr "Subscribe"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Request sent"
+msgstr "Request sent"
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "Decline"
+msgstr "Decline"
+
+msgid "Remove from friends?"
+msgstr "Remove from friends?"
+
+msgid "Remove from friends"
+msgstr "Remove from friends"
+
+msgid "Add to friends"
+msgstr "Add to friends"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Create playlist"
+msgstr "Create playlist"
+
+msgid "Friends"
+msgstr "Friends"
+
+msgid "About"
+msgstr "About"
+
+msgid "User has not uploaded any videos yet."
+msgstr "User has not uploaded any videos yet."
+
+msgid "You have no favorite videos"
+msgstr "You have no favorite videos"
+
+msgid "User has no favorite videos"
+msgstr "User has no favorite videos"
+
+msgid "Favorite videos are hidden from public view."
+msgstr "Favorite videos are hidden from public view."
+
+msgid "videos"
+msgstr "videos"
+
+msgid "subscribers"
+msgstr "subscribers"
+
+msgid "You have no friends yet"
+msgstr "You have no friends yet"
+
+msgid "User has no friends yet"
+msgstr "User has no friends yet"
+
+msgid "You have no subscriptions"
+msgstr "You have no subscriptions"
+
+msgid "User has no subscriptions"
+msgstr "User has no subscriptions"
+
+msgid "Subscriptions are hidden from public view."
+msgstr "Subscriptions are hidden from public view."
+
+msgid "You have no playlists"
+msgstr "You have no playlists"
+
+msgid "User has no playlists"
+msgstr "User has no playlists"
+
+msgid "Watch Later list is empty."
+msgstr "Watch Later list is empty."
+
+msgid "ago"
+msgstr "ago"
+
+msgid "You have no notifications."
+msgstr "You have no notifications."

@@ -1,0 +1,9 @@
+{% load static %}
+<div id="playlist-btn-{{ video.id }}" class="playlist-btn"
+     role="button" aria-label="Add to Playlist" title="Add to Playlist"
+     hx-get="{% url 'videos:htmx_playlists_modal' video.id %}"
+     hx-target="#modal-container"
+     hx-swap="innerHTML"
+     hx-on:click="event.preventDefault(); event.stopPropagation();">
+    <i class="fas fa-plus"></i>
+</div>
