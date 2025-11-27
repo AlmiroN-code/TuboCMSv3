@@ -726,7 +726,7 @@ top -p $(pgrep -f "python|celery")
 ### Тестирование производительности
 ```bash
 # Нагрузочное тестирование (если установлен ab)
-ab -n 100 -c 10 http://localhost:8000/
+ab -n 100 -c 10 http://localhost:8008/
 
 # Профилирование Django запросов
 python manage.py shell
